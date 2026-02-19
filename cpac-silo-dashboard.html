@@ -6,6 +6,9 @@
 <title>CPAC Silo Monitoring Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
 <style>
   :root {
     --red: #CC0000;
@@ -676,31 +679,107 @@
   .national-map-stage {
     position: relative;
     height: 600px;
-    background: radial-gradient(circle at 20% 15%, #f6fbff 0%, #e6f2fb 38%, #d4e8f5 100%);
+    overflow: hidden;
+    background: #dceaf6;
+  }
+  #national-map {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .map-overlay-legend {
+    position: absolute;
+    left: 14px;
+    bottom: 14px;
+    z-index: 400;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 10px 12px;
+    min-width: 190px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .map-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #333;
+    line-height: 1.4;
+  }
+  .map-legend-row + .map-legend-row { margin-top: 6px; }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .legend-dot.cement { background: #CC0000; border: 1px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,0.15); }
+  .legend-dot.cpac { background: #616161; }
+  .legend-dot.alert { background: #F44336; }
+  .map-marker {
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    isolation: isolate;
+    color: #fff;
+    font-weight: 700;
+    line-height: 1;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.28);
+    font-family: var(--font);
   }
-  .national-map-bg {
-    position: absolute;
-    height: 590px;
-    width: auto;
-    opacity: 0.55;
-    filter: drop-shadow(0 8px 16px rgba(0, 64, 128, 0.12));
-    pointer-events: none;
+  .map-marker.cement {
+    width: 26px;
+    height: 26px;
+    background: #CC0000;
+    font-size: 12px;
   }
-  .national-map-svg {
-    position: relative;
-    z-index: 1;
-    height: 590px;
-    width: auto;
+  .map-marker.warning {
+    width: 26px;
+    height: 26px;
+    background: #FFC107;
+    font-size: 12px;
+    color: #fff;
   }
+  .map-marker.cpac {
+    width: 10px;
+    height: 10px;
+    background: #616161;
+    border: none;
+    box-shadow: none;
+  }
+  .map-marker.alert {
+    width: 12px;
+    height: 12px;
+    background: #F44336;
+    border: 1px solid #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .cpac-cluster {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(97, 97, 97, 0.88);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.28);
+  }
+  .leaflet-control-attribution { font-size: 10px; }
   @media (max-width: 820px) {
     .national-map-stage { height: 430px; }
-    .national-map-bg,
-    .national-map-svg { height: 420px; }
+    .map-overlay-legend {
+      left: 8px;
+      bottom: 8px;
+      transform: scale(0.95);
+      transform-origin: left bottom;
+    }
   }
 
   /* ── TOOLTIPS ── */
@@ -959,144 +1038,14 @@
           <span>🟡 แจ้งเตือน</span>
         </div>
       </div>
-      <!-- SVG Map of Thailand (simplified) -->
+      <!-- Thailand basemap container -->
       <div class="national-map-stage">
-        <svg class="national-map-bg" viewBox="0 0 440 660" aria-hidden="true">
-          <defs>
-            <linearGradient id="thaiBgLand" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#e6efdd"/>
-              <stop offset="100%" stop-color="#cddfc5"/>
-            </linearGradient>
-            <linearGradient id="thaiBgSea" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#edf6fd"/>
-              <stop offset="100%" stop-color="#dbeefb"/>
-            </linearGradient>
-          </defs>
-          <rect width="440" height="660" fill="url(#thaiBgSea)"/>
-          <path d="M155,35 L175,22 L210,20 L245,30 L275,55 L295,90 L305,130 L308,165 L305,195 L310,225 L305,250 L295,270 L280,285 L275,305 L278,325 L272,345 L260,360 L255,375 L258,395 L250,420 L240,445 L228,468 L218,488 L210,505 L202,495 L195,478 L185,462 L178,448 L172,432 L168,415 L175,400 L182,385 L178,368 L165,352 L152,338 L145,318 L140,300 L138,278 L132,258 L128,235 L125,210 L122,185 L118,158 L120,130 L125,105 L132,80 L142,58 Z"
-                fill="url(#thaiBgLand)" stroke="#5d8a55" stroke-width="2"/>
-          <path d="M210,505 L206,522 L202,542 L198,562 L194,582 L190,605 L187,625 L184,640 L181,650 L178,648 L177,635 L176,618 L175,600 L174,582 L173,562 L172,542 L171,522 L172,508 L178,500 L185,498 Z"
-                fill="url(#thaiBgLand)" stroke="#5d8a55" stroke-width="2"/>
-          <path d="M150,145 L280,145 M140,195 L300,195 M135,245 L302,245 M145,305 L285,305 M160,365 L265,365 M185,430 L248,430"
-                fill="none" stroke="#8fb78b" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
-          <path d="M175,82 L225,150 L210,245 L240,320 L212,420 L194,505 L188,610"
-                fill="none" stroke="#86b183" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
-        </svg>
-        <svg class="national-map-svg" viewBox="0 0 440 660">
-          <!-- Thailand simplified outline - main body -->
-          <path d="M155,35 L175,22 L210,20 L245,30 L275,55 L295,90 L305,130 L308,165 L305,195 L310,225 L305,250 L295,270 L280,285 L275,305 L278,325 L272,345 L260,360 L255,375 L258,395 L250,420 L240,445 L228,468 L218,488 L210,505 L202,495 L195,478 L185,462 L178,448 L172,432 L168,415 L175,400 L182,385 L178,368 L165,352 L152,338 L145,318 L140,300 L138,278 L132,258 L128,235 L125,210 L122,185 L118,158 L120,130 L125,105 L132,80 L142,58 Z"
-                fill="#A7C995" stroke="#6D9A5D" stroke-width="1.3" opacity="0.58"/>
-          <!-- Peninsula (South Thailand) -->
-          <path d="M210,505 L206,522 L202,542 L198,562 L194,582 L190,605 L187,625 L184,640 L181,650 L178,648 L177,635 L176,618 L175,600 L174,582 L173,562 L172,542 L171,522 L172,508 L178,500 L185,498 Z"
-                fill="#A7C995" stroke="#6D9A5D" stroke-width="1.3" opacity="0.58"/>
-
-          <!-- Province borders (simplified) - Saraburi region box hint -->
-          <rect x="248" y="255" width="50" height="55" rx="3" fill="none" stroke="#CC0000" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
-          <text x="273" y="252" text-anchor="middle" font-size="8" fill="#CC0000" opacity="0.7">จ.สระบุรี</text>
-
-          <!-- ══ CEMENT PLANTS ══ -->
-
-          <!-- 1. ลำปาง (จ.ลำปาง) — Northern Thailand ~17.9°N -->
-          <g onclick="alert('โรงงานลำปาง\\nจ.ลำปาง')" style="cursor:pointer">
-            <circle cx="175" cy="170" r="13" fill="#CC0000" stroke="white" stroke-width="2"/>
-            <text x="175" y="174" text-anchor="middle" fill="white" font-size="11" font-weight="bold">🏭</text>
-            <rect x="192" y="156" width="64" height="28" rx="4" fill="white" opacity="0.92" stroke="#CC0000" stroke-width="0.8"/>
-            <text x="224" y="167" text-anchor="middle" fill="#CC0000" font-size="9" font-weight="bold">ลำปาง (SLP)</text>
-            <text x="224" y="178" text-anchor="middle" fill="#666" font-size="8">จ.ลำปาง</text>
-          </g>
-
-          <!-- 2. ท่าหลวง (จ.สระบุรี) — Central ~14.8°N -->
-          <g onclick="alert('โรงงานท่าหลวง\\nจ.สระบุรี')" style="cursor:pointer">
-            <circle cx="252" cy="268" r="13" fill="#CC0000" stroke="white" stroke-width="2"/>
-            <text x="252" y="272" text-anchor="middle" fill="white" font-size="11" font-weight="bold">🏭</text>
-            <rect x="268" y="256" width="68" height="28" rx="4" fill="white" opacity="0.92" stroke="#CC0000" stroke-width="0.8"/>
-            <text x="302" y="267" text-anchor="middle" fill="#CC0000" font-size="9" font-weight="bold">ท่าหลวง (STL)</text>
-            <text x="302" y="278" text-anchor="middle" fill="#666" font-size="8">จ.สระบุรี</text>
-          </g>
-
-          <!-- 3. เขาวง (จ.สระบุรี) -->
-          <g onclick="alert('โรงงานเขาวง\\nจ.สระบุรี')" style="cursor:pointer">
-            <circle cx="263" cy="288" r="13" fill="#CC0000" stroke="white" stroke-width="2"/>
-            <text x="263" y="292" text-anchor="middle" fill="white" font-size="11" font-weight="bold">🏭</text>
-            <rect x="279" y="276" width="65" height="28" rx="4" fill="white" opacity="0.92" stroke="#CC0000" stroke-width="0.8"/>
-            <text x="311" y="287" text-anchor="middle" fill="#CC0000" font-size="9" font-weight="bold">เขาวง (SKW)</text>
-            <text x="311" y="298" text-anchor="middle" fill="#666" font-size="8">จ.สระบุรี</text>
-          </g>
-
-          <!-- 4. แก่งคอย (จ.สระบุรี) -->
-          <g onclick="alert('โรงงานแก่งคอย\\nจ.สระบุรี')" style="cursor:pointer">
-            <circle cx="270" cy="306" r="13" fill="#FFC107" stroke="white" stroke-width="2"/>
-            <text x="270" y="310" text-anchor="middle" fill="white" font-size="11" font-weight="bold">⚠</text>
-            <rect x="286" y="295" width="68" height="28" rx="4" fill="white" opacity="0.92" stroke="#FFC107" stroke-width="0.8"/>
-            <text x="320" y="306" text-anchor="middle" fill="#CC0000" font-size="9" font-weight="bold">แก่งคอย (SKK)</text>
-            <text x="320" y="317" text-anchor="middle" fill="#666" font-size="8">จ.สระบุรี</text>
-          </g>
-
-          <!-- 5. ทุ่งสง (จ.นครศรีธรรมราช) -->
-          <g onclick="alert('โรงงานทุ่งสง\\nจ.นครศรีธรรมราช')" style="cursor:pointer">
-            <circle cx="188" cy="518" r="13" fill="#CC0000" stroke="white" stroke-width="2"/>
-            <text x="188" y="522" text-anchor="middle" fill="white" font-size="11" font-weight="bold">🏭</text>
-            <rect x="204" y="506" width="76" height="28" rx="4" fill="white" opacity="0.92" stroke="#CC0000" stroke-width="0.8"/>
-            <text x="242" y="517" text-anchor="middle" fill="#CC0000" font-size="9" font-weight="bold">ทุ่งสง (STS)</text>
-            <text x="242" y="528" text-anchor="middle" fill="#666" font-size="8">จ.นครศรีธรรมราช</text>
-          </g>
-
-          <!-- ══ CPAC PLANTS (gray dots) scattered across Thailand ══ -->
-          <!-- Bangkok area cluster -->
-          <circle cx="242" cy="328" r="5" fill="#616161" opacity="0.65" style="cursor:pointer"/>
-          <circle cx="248" cy="335" r="5" fill="#616161" opacity="0.65"/>
-          <circle cx="238" cy="338" r="5" fill="#616161" opacity="0.65"/>
-          <circle cx="255" cy="330" r="5" fill="#616161" opacity="0.65"/>
-          <circle cx="245" cy="345" r="5" fill="#F44336" opacity="0.75" title="Alert"/>
-          <circle cx="235" cy="322" r="5" fill="#616161" opacity="0.65"/>
-          <circle cx="258" cy="320" r="5" fill="#616161" opacity="0.65"/>
-          <circle cx="250" cy="350" r="5" fill="#616161" opacity="0.65"/>
-          <circle cx="230" cy="315" r="5" fill="#616161" opacity="0.65"/>
-          <!-- North area -->
-          <circle cx="182" cy="150" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="190" cy="142" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="198" cy="155" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="185" cy="130" r="5" fill="#616161" opacity="0.55"/>
-          <!-- Northeast area -->
-          <circle cx="275" cy="220" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="282" cy="230" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="288" cy="215" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="270" cy="240" r="5" fill="#616161" opacity="0.55"/>
-          <!-- Central/East -->
-          <circle cx="265" cy="355" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="255" cy="360" r="5" fill="#616161" opacity="0.55"/>
-          <!-- South area -->
-          <circle cx="186" cy="545" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="182" cy="560" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="180" cy="578" r="5" fill="#616161" opacity="0.55"/>
-          <circle cx="178" cy="596" r="5" fill="#616161" opacity="0.55"/>
-
-          <!-- ══ NORTH COMPASS ══ -->
-          <g transform="translate(38,50)">
-            <circle cx="0" cy="0" r="16" fill="white" stroke="#CCC" stroke-width="1"/>
-            <text x="0" y="-20" text-anchor="middle" font-size="8" fill="#666">N</text>
-            <polygon points="0,-12 4,4 0,0 -4,4" fill="#CC0000"/>
-            <polygon points="0,12 4,-4 0,0 -4,-4" fill="#999"/>
-          </g>
-
-          <!-- ══ LEGEND ══ -->
-          <rect x="14" y="580" width="170" height="72" rx="6" fill="white" opacity="0.95" stroke="#DDD" stroke-width="1"/>
-          <circle cx="30" cy="598" r="8" fill="#CC0000" stroke="white" stroke-width="1.5"/>
-          <text x="44" y="602" font-size="10" fill="#333" font-weight="600">โรงงานซีเมนต์ (5)</text>
-          <circle cx="30" cy="618" r="5" fill="#616161"/>
-          <text x="44" y="622" font-size="10" fill="#333">CPAC Plant (300+)</text>
-          <circle cx="30" cy="636" r="5" fill="#F44336"/>
-          <text x="44" y="640" font-size="10" fill="#CC0000">⚠ Quality Alert</text>
-          <circle cx="30" cy="654" r="5" fill="#FFC107"/>
-          <text x="44" y="658" font-size="10" fill="#E65100">⚠ Silo Warning</text>
-
-          <!-- Province label: สระบุรี -->
-          <text x="310" y="330" font-size="8" fill="#666" opacity="0.7">จ.สระบุรี</text>
-          <!-- Province label: ลำปาง -->
-          <text x="140" y="190" font-size="8" fill="#666" opacity="0.7">จ.ลำปาง</text>
-          <!-- Province label: นครศรีธรรมราช -->
-          <text x="155" y="540" font-size="8" fill="#666" opacity="0.7">จ.นครศรีฯ</text>
-        </svg>
+        <div id="national-map" aria-label="Thailand map"></div>
+        <div class="map-overlay-legend">
+          <div class="map-legend-row"><span class="legend-dot cement"></span><span>&#xE42;&#xE23;&#xE07;&#xE07;&#xE32;&#xE19;&#xE0B;&#xE35;&#xE40;&#xE21;&#xE19;&#xE15;&#xE4C; (5)</span></div>
+          <div class="map-legend-row"><span class="legend-dot cpac"></span><span>CPAC Plants (300+)</span></div>
+          <div class="map-legend-row"><span class="legend-dot alert"></span><span>&#xE41;&#xE08;&#xE49;&#xE07;&#xE40;&#xE15;&#xE37;&#xE2D;&#xE19; (Quality Alert)</span></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1368,6 +1317,8 @@
   </div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
 // ─── DATA ───────────────────────────────────────────────────────────────────
 // Cement Plant Silos (Cement only — no Raw Material)
@@ -1487,6 +1438,171 @@ function renderAll() {
 }
 renderAll();
 
+// Map stack detected: custom SVG only (no map library).
+// Basemap upgraded to Leaflet + OSM with Thailand viewport/bounds while preserving markers and click behavior.
+let nationalMap = null;
+let nationalMapReady = false;
+
+const thailandCenter = [13.7563, 100.5018];
+const thailandBounds = L.latLngBounds([5.5, 97.0], [21.0, 106.5]);
+const thailandPanBounds = L.latLngBounds([4.8, 96.0], [22.0, 107.8]);
+
+function buildCpacPoints() {
+  const seeds = [
+    { lat: 13.7563, lng: 100.5018, count: 88, spread: 1.0 },
+    { lat: 18.7883, lng: 98.9853, count: 34, spread: 1.0 },
+    { lat: 16.4419, lng: 102.8350, count: 38, spread: 1.0 },
+    { lat: 14.9799, lng: 102.0977, count: 34, spread: 1.0 },
+    { lat: 12.6823, lng: 101.2810, count: 26, spread: 0.9 },
+    { lat: 8.4304, lng: 99.9631, count: 22, spread: 0.9 },
+    { lat: 7.0084, lng: 100.4747, count: 20, spread: 0.9 },
+    { lat: 16.8211, lng: 100.2659, count: 24, spread: 1.0 },
+    { lat: 17.4138, lng: 102.7870, count: 22, spread: 0.95 },
+    { lat: 9.1401, lng: 99.3331, count: 20, spread: 0.85 }
+  ];
+
+  const points = [];
+  seeds.forEach((seed, seedIndex) => {
+    for (let i = 0; i < seed.count; i += 1) {
+      const angle = ((i * 37) + (seedIndex * 57)) * Math.PI / 180;
+      const radius = (0.08 + (i % 10) * 0.02) * seed.spread;
+      const lat = seed.lat + (Math.sin(angle) * radius);
+      const lng = seed.lng + (Math.cos(angle) * radius * 1.3);
+      if (thailandBounds.contains([lat, lng])) points.push([lat, lng]);
+    }
+  });
+  return points.slice(0, 320);
+}
+
+function ensureNationalMap() {
+  if (nationalMapReady) return;
+  if (!document.getElementById('national-map') || !window.L) return;
+  nationalMapReady = true;
+
+  nationalMap = L.map('national-map', {
+    zoomControl: true,
+    minZoom: 5,
+    maxZoom: 12,
+    maxBounds: thailandPanBounds,
+    maxBoundsViscosity: 0.9,
+    preferCanvas: true
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(nationalMap);
+
+  const thailandBoundary = {
+    type: 'Feature',
+    properties: { name: 'Thailand' },
+    geometry: {
+      type: 'Polygon',
+      coordinates: [[
+        [97.4, 20.4], [98.7, 20.2], [99.9, 20.1], [101.5, 19.4], [103.0, 18.3],
+        [104.7, 17.2], [104.2, 15.9], [103.4, 14.6], [102.9, 13.5], [101.5, 12.6],
+        [100.6, 11.8], [99.7, 10.3], [99.4, 8.9], [99.8, 7.9], [100.2, 7.1],
+        [100.0, 6.2], [99.3, 6.0], [98.9, 6.8], [98.8, 8.3], [98.6, 9.8],
+        [98.3, 11.2], [98.1, 12.5], [97.7, 13.8], [97.5, 15.2], [97.3, 16.8],
+        [97.2, 18.0], [97.3, 19.3], [97.4, 20.4]
+      ]]
+    }
+  };
+
+  L.geoJSON(thailandBoundary, {
+    interactive: false,
+    style: {
+      color: '#9AA5B1',
+      weight: 1,
+      fillColor: '#DDE3E8',
+      fillOpacity: 0.08
+    }
+  }).addTo(nationalMap);
+
+  const cementIcon = L.divIcon({
+    className: '',
+    html: '<div class="map-marker cement">\uD83C\uDFED</div>',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+  const cementWarnIcon = L.divIcon({
+    className: '',
+    html: '<div class="map-marker warning">\u26A0</div>',
+    iconSize: [26, 26],
+    iconAnchor: [13, 13]
+  });
+  const cpacIcon = L.divIcon({
+    className: '',
+    html: '<div class="map-marker cpac"></div>',
+    iconSize: [10, 10],
+    iconAnchor: [5, 5]
+  });
+  const alertIcon = L.divIcon({
+    className: '',
+    html: '<div class="map-marker alert"></div>',
+    iconSize: [12, 12],
+    iconAnchor: [6, 6]
+  });
+
+  const cementPlants = [
+    { name: 'Lampang (SLP)', province: 'Lampang', lat: 18.2888, lng: 99.4908, warn: false },
+    { name: 'Tha Luang (STL)', province: 'Saraburi', lat: 14.6401, lng: 100.9126, warn: false },
+    { name: 'Khao Wong (SKW)', province: 'Saraburi', lat: 14.5930, lng: 101.0106, warn: false },
+    { name: 'Kaeng Khoi (SKK)', province: 'Saraburi', lat: 14.5861, lng: 100.9972, warn: true },
+    { name: 'Thung Song (STS)', province: 'Nakhon Si Thammarat', lat: 8.1647, lng: 99.6806, warn: false }
+  ];
+
+  const fitPoints = [];
+  cementPlants.forEach((plant) => {
+    const marker = L.marker([plant.lat, plant.lng], {
+      icon: plant.warn ? cementWarnIcon : cementIcon
+    }).addTo(nationalMap);
+    marker.bindTooltip(`${plant.name}<br>${plant.province}`, { direction: 'top' });
+    marker.on('click', () => openModal());
+    fitPoints.push([plant.lat, plant.lng]);
+  });
+
+  const cpacPoints = buildCpacPoints();
+  const cpacCluster = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 45,
+    spiderfyOnMaxZoom: true,
+    iconCreateFunction(cluster) {
+      return L.divIcon({
+        className: 'cpac-cluster',
+        html: `<span>${cluster.getChildCount()}</span>`,
+        iconSize: [34, 34]
+      });
+    }
+  });
+
+  cpacPoints.forEach((point) => {
+    const marker = L.marker(point, { icon: cpacIcon });
+    marker.on('click', () => openModal());
+    cpacCluster.addLayer(marker);
+    fitPoints.push(point);
+  });
+  nationalMap.addLayer(cpacCluster);
+
+  const qualityAlerts = [
+    { lat: 13.69, lng: 100.75, label: 'Quality Alert' }
+  ];
+  qualityAlerts.forEach((row) => {
+    const alertMarker = L.marker([row.lat, row.lng], { icon: alertIcon }).addTo(nationalMap);
+    alertMarker.bindTooltip(row.label, { direction: 'top' });
+    alertMarker.on('click', () => openModal());
+    fitPoints.push([row.lat, row.lng]);
+  });
+
+  if (fitPoints.length > 0) {
+    nationalMap.fitBounds(L.latLngBounds(fitPoints), { padding: [24, 24], maxZoom: 7 });
+  } else {
+    nationalMap.setView(thailandCenter, 6);
+  }
+
+  setTimeout(() => nationalMap.invalidateSize(), 0);
+}
+
 // ─── TABS ────────────────────────────────────────────────────────────────────
 function switchTab(el, viewId) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -1494,6 +1610,10 @@ function switchTab(el, viewId) {
   ['cement-view','cpac-view','map-view','quality-view'].forEach(id => {
     document.getElementById(id).style.display = id === viewId ? '' : 'none';
   });
+  if (viewId === 'map-view') {
+    ensureNationalMap();
+    if (nationalMap) setTimeout(() => nationalMap.invalidateSize(), 0);
+  }
 }
 
 // ─── MODAL ───────────────────────────────────────────────────────────────────
@@ -1805,3 +1925,5 @@ renderQTable();
 </script>
 </body>
 </html>
+
+
