@@ -64,11 +64,16 @@
     margin-right: 32px;
   }
   .nav-logo-icon {
-    width: 32px; height: 32px;
-    background: var(--red);
+    width: 40px; height: 32px;
     border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    color: white; font-weight: 700; font-size: 13px; letter-spacing: -0.5px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .nav-logo-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .nav-logo-text { font-weight: 700; font-size: 16px; color: var(--gray-900); }
   .nav-logo-sub { font-size: 11px; color: var(--gray-500); font-weight: 400; }
@@ -94,6 +99,27 @@
     margin-left: auto;
     display: flex; align-items: center; gap: 12px;
   }
+  .nav-user-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-user-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.15;
+  }
+  .nav-user-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .nav-user-role {
+    font-size: 10px;
+    color: var(--gray-500);
+    font-weight: 500;
+  }
   .nav-badge {
     background: var(--red);
     color: white; font-size: 11px; font-weight: 600;
@@ -105,6 +131,9 @@
     display: flex; align-items: center; justify-content: center;
     font-size: 13px; font-weight: 600; color: var(--gray-700);
     cursor: pointer;
+  }
+  @media (max-width: 900px) {
+    .nav-user-meta { display: none; }
   }
 
   /* ── PLANT HEADER BAR ── */
@@ -643,6 +672,37 @@
     font-size: 12px; outline: none; width: 160px; color: var(--gray-900);
   }
 
+  /* National map */
+  .national-map-stage {
+    position: relative;
+    height: 600px;
+    background: radial-gradient(circle at 20% 15%, #f6fbff 0%, #e6f2fb 38%, #d4e8f5 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .national-map-bg {
+    position: absolute;
+    height: 590px;
+    width: auto;
+    opacity: 0.55;
+    filter: drop-shadow(0 8px 16px rgba(0, 64, 128, 0.12));
+    pointer-events: none;
+  }
+  .national-map-svg {
+    position: relative;
+    z-index: 1;
+    height: 590px;
+    width: auto;
+  }
+  @media (max-width: 820px) {
+    .national-map-stage { height: 430px; }
+    .national-map-bg,
+    .national-map-svg { height: 420px; }
+  }
+
   /* ── TOOLTIPS ── */
   [data-tip] { position: relative; }
   [data-tip]::after {
@@ -668,7 +728,9 @@
 <!-- TOP NAV -->
 <nav class="top-nav">
   <div class="nav-logo">
-    <div class="nav-logo-icon">CP</div>
+    <div class="nav-logo-icon">
+      <img src="images/cpac-logo.jpg" alt="CPAC Logo">
+    </div>
     <div>
       <div class="nav-logo-text">CPAC Silo Monitor</div>
       <div class="nav-logo-sub">Cement & Raw Material</div>
@@ -690,7 +752,13 @@
   </div>
   <div class="nav-right">
     <span class="nav-badge">3 Alerts</span>
-    <div class="nav-user">QC</div>
+    <div class="nav-user-wrap">
+      <div class="nav-user-meta">
+        <div class="nav-user-name">Chaiwat Thepjun</div>
+        <div class="nav-user-role">Digital Supply Chain</div>
+      </div>
+      <div class="nav-user">CT</div>
+    </div>
   </div>
 </nav>
 
@@ -892,14 +960,35 @@
         </div>
       </div>
       <!-- SVG Map of Thailand (simplified) -->
-      <div style="position:relative; height:600px; background:linear-gradient(180deg,#EBF5FB 0%,#D6EAF8 100%); display:flex; align-items:center; justify-content:center;">
-        <svg viewBox="0 0 440 660" style="height:590px; width:auto;">
+      <div class="national-map-stage">
+        <svg class="national-map-bg" viewBox="0 0 440 660" aria-hidden="true">
+          <defs>
+            <linearGradient id="thaiBgLand" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#e6efdd"/>
+              <stop offset="100%" stop-color="#cddfc5"/>
+            </linearGradient>
+            <linearGradient id="thaiBgSea" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#edf6fd"/>
+              <stop offset="100%" stop-color="#dbeefb"/>
+            </linearGradient>
+          </defs>
+          <rect width="440" height="660" fill="url(#thaiBgSea)"/>
+          <path d="M155,35 L175,22 L210,20 L245,30 L275,55 L295,90 L305,130 L308,165 L305,195 L310,225 L305,250 L295,270 L280,285 L275,305 L278,325 L272,345 L260,360 L255,375 L258,395 L250,420 L240,445 L228,468 L218,488 L210,505 L202,495 L195,478 L185,462 L178,448 L172,432 L168,415 L175,400 L182,385 L178,368 L165,352 L152,338 L145,318 L140,300 L138,278 L132,258 L128,235 L125,210 L122,185 L118,158 L120,130 L125,105 L132,80 L142,58 Z"
+                fill="url(#thaiBgLand)" stroke="#5d8a55" stroke-width="2"/>
+          <path d="M210,505 L206,522 L202,542 L198,562 L194,582 L190,605 L187,625 L184,640 L181,650 L178,648 L177,635 L176,618 L175,600 L174,582 L173,562 L172,542 L171,522 L172,508 L178,500 L185,498 Z"
+                fill="url(#thaiBgLand)" stroke="#5d8a55" stroke-width="2"/>
+          <path d="M150,145 L280,145 M140,195 L300,195 M135,245 L302,245 M145,305 L285,305 M160,365 L265,365 M185,430 L248,430"
+                fill="none" stroke="#8fb78b" stroke-width="1.2" stroke-linecap="round" opacity="0.5"/>
+          <path d="M175,82 L225,150 L210,245 L240,320 L212,420 L194,505 L188,610"
+                fill="none" stroke="#86b183" stroke-width="1.2" stroke-linecap="round" opacity="0.45"/>
+        </svg>
+        <svg class="national-map-svg" viewBox="0 0 440 660">
           <!-- Thailand simplified outline - main body -->
           <path d="M155,35 L175,22 L210,20 L245,30 L275,55 L295,90 L305,130 L308,165 L305,195 L310,225 L305,250 L295,270 L280,285 L275,305 L278,325 L272,345 L260,360 L255,375 L258,395 L250,420 L240,445 L228,468 L218,488 L210,505 L202,495 L195,478 L185,462 L178,448 L172,432 L168,415 L175,400 L182,385 L178,368 L165,352 L152,338 L145,318 L140,300 L138,278 L132,258 L128,235 L125,210 L122,185 L118,158 L120,130 L125,105 L132,80 L142,58 Z"
-                fill="#B8D4A8" stroke="#7CAF6C" stroke-width="1.5" opacity="0.85"/>
+                fill="#A7C995" stroke="#6D9A5D" stroke-width="1.3" opacity="0.58"/>
           <!-- Peninsula (South Thailand) -->
           <path d="M210,505 L206,522 L202,542 L198,562 L194,582 L190,605 L187,625 L184,640 L181,650 L178,648 L177,635 L176,618 L175,600 L174,582 L173,562 L172,542 L171,522 L172,508 L178,500 L185,498 Z"
-                fill="#B8D4A8" stroke="#7CAF6C" stroke-width="1.5" opacity="0.85"/>
+                fill="#A7C995" stroke="#6D9A5D" stroke-width="1.3" opacity="0.58"/>
 
           <!-- Province borders (simplified) - Saraburi region box hint -->
           <rect x="248" y="255" width="50" height="55" rx="3" fill="none" stroke="#CC0000" stroke-width="0.8" stroke-dasharray="4,3" opacity="0.4"/>
