@@ -380,6 +380,78 @@
     line-height: 1.4;
   }
 
+  /* ── QUALITY DETAIL PANEL ── */
+  .qd-groups { display: flex; flex-direction: column; gap: 16px; }
+  .qd-group {
+    background: var(--gray-50);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .qd-group-title {
+    font-size: 12px; font-weight: 700; color: var(--gray-700);
+    padding: 8px 14px;
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    text-transform: uppercase; letter-spacing: 0.4px;
+  }
+  .qd-param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    padding: 12px;
+  }
+  .qd-param {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 8px 10px;
+    position: relative;
+  }
+  .qd-param-name {
+    font-size: 10px; color: var(--gray-500); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.3px;
+    margin-bottom: 3px;
+  }
+  .qd-param-val {
+    font-size: 17px; font-weight: 700; font-family: var(--mono);
+    line-height: 1.1;
+  }
+  .qd-param-unit { font-size: 10px; color: var(--gray-500); font-weight: 400; }
+  .qd-param-spec { font-size: 9px; color: var(--gray-400); margin-top: 2px; }
+  .qd-param-badge {
+    position: absolute; top: 6px; right: 6px;
+    font-size: 10px; width: 16px; height: 16px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700;
+  }
+  .qd-param-badge.ok { background: var(--status-green); }
+  .qd-param-badge.warn { background: var(--status-yellow); }
+  .qd-param-badge.fail { background: var(--status-red); }
+  .qd-param-badge.na { background: var(--gray-300); }
+  .qd-param-val.ok { color: var(--status-green); }
+  .qd-param-val.warn { color: var(--status-yellow); }
+  .qd-param-val.fail { color: var(--status-red); }
+  .qd-param-val.na { color: var(--gray-300); }
+
+  /* Strength bars */
+  .qd-strength-bars { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .str-row { display: flex; align-items: center; gap: 10px; }
+  .str-label { width: 60px; font-size: 11px; font-weight: 600; color: var(--gray-700); flex-shrink: 0; }
+  .str-bar-wrap { flex: 1; background: var(--gray-100); border-radius: 4px; height: 22px; position: relative; overflow: hidden; }
+  .str-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; display: flex; align-items: center; padding-left: 8px; }
+  .str-bar span { font-size: 11px; font-weight: 700; color: white; font-family: var(--mono); }
+  .str-target-line {
+    position: absolute; top: 0; bottom: 0; width: 2px;
+    background: rgba(0,0,0,0.25); border-radius: 1px;
+  }
+  .str-val { width: 70px; text-align: right; font-size: 12px; font-weight: 700; font-family: var(--mono); }
+  .str-spec { width: 80px; font-size: 10px; color: var(--gray-500); }
+
+  /* DN table clickable row highlight */
+  .dt tr.selected td { background: #FFF5F5 !important; }
+  .dt td.dn-link { color: var(--red); font-weight: 700; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+
   /* ── CEMENT PLANT SPECIFIC ── */
   .lot-info {
     padding: 4px 10px 0;
@@ -944,74 +1016,92 @@
 <!-- ══════════════════════ QUALITY VIEW ══════════════════════ -->
 <div id="quality-view" style="display:none">
   <div class="main-content">
+
+    <!-- Filter/Summary strip -->
+    <div class="filter-bar" style="margin-bottom:14px">
+      <span class="filter-label">โรงงาน:</span>
+      <div class="filter-chip active" onclick="setChip(this)">ทั้งหมด</div>
+      <div class="filter-chip" onclick="setChip(this)">STL ท่าหลวง</div>
+      <div class="filter-chip" onclick="setChip(this)">SKK แก่งคอย</div>
+      <div class="filter-chip" onclick="setChip(this)">SLP ลำปาง</div>
+      <div class="filter-chip" onclick="setChip(this)">SKW เขาวง</div>
+      <div class="filter-chip" onclick="setChip(this)">STS ทุ่งสง</div>
+      <span class="filter-label" style="margin-left:8px">Lot:</span>
+      <div class="filter-chip active" onclick="setChip(this)">LOT-47</div>
+      <div class="filter-chip" onclick="setChip(this)">LOT-46</div>
+      <div class="filter-search">
+        <span style="color:var(--gray-400)">🔍</span>
+        <input type="text" placeholder="ค้นหา DN, Lot, SILO...">
+      </div>
+    </div>
+
     <div class="panel">
       <div class="panel-header">
         <div class="panel-icon cement">🧪</div>
         <div>
           <div class="panel-title">Quality Traceability — DN Tracking</div>
-          <div class="panel-subtitle">DN → SILONO → Lot → Quality → CPAC Destination</div>
+          <div class="panel-subtitle">DN → SILONO → Lot → ผลคุณภาพซีเมนต์ → CPAC Destination | คลิก DN เพื่อดูผลทดสอบเต็ม</div>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
+          <span style="font-size:11px; color:var(--gray-500)">แสดง parameter:</span>
+          <select id="qview-mode" onchange="renderQTable()" style="font-family:var(--font); font-size:12px; border:1px solid var(--border); border-radius:4px; padding:3px 8px; background:var(--gray-50); color:var(--gray-900); cursor:pointer; outline:none;">
+            <option value="summary">สรุป (Strength + Setting)</option>
+            <option value="chemical">เคมี (SiO2, Al2O3, CaO...)</option>
+            <option value="physical">กายภาพ (Blaine, Autoclave...)</option>
+            <option value="compound">Compound (C3S, C2S, C3A...)</option>
+            <option value="all">ทั้งหมด (All Parameters)</option>
+          </select>
         </div>
       </div>
-      <div class="panel-body" style="min-width:0; overflow-x:auto;">
-        <table class="dt" style="min-width:800px">
-          <thead>
-            <tr>
-              <th>DN No.</th>
-              <th>SILONO</th>
-              <th>Lot No.</th>
-              <th>Silo Level @ Dispatch</th>
-              <th>28D Strength</th>
-              <th>Setting Time</th>
-              <th>SHIPTO (CPAC)</th>
-              <th>Bay Out Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td onclick="openModal()">DN-250220-001</td><td>SILO-1</td><td>LOT-47</td>
-              <td><span style="font-family:var(--mono)">67.4%</span> / 5,392T</td>
-              <td style="color:var(--status-green); font-weight:600">42.1 MPa ✓</td>
-              <td style="color:var(--status-green)">185 min ✓</td>
-              <td>CPAC บางนา-ตราด</td><td>20/02/68 08:14</td>
-              <td><span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">Pass</span></td>
-            </tr>
-            <tr>
-              <td onclick="openModal()">DN-250220-002</td><td>SILO-2</td><td>LOT-47</td>
-              <td>71.2% / 5,696T</td>
-              <td style="color:var(--status-green); font-weight:600">41.8 MPa ✓</td>
-              <td style="color:var(--status-green)">192 min ✓</td>
-              <td>CPAC รัชดา</td><td>20/02/68 09:02</td>
-              <td><span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">Pass</span></td>
-            </tr>
-            <tr>
-              <td onclick="openModal()">DN-250220-003</td><td>SILO-7</td><td>LOT-46</td>
-              <td>28.1% / 2,248T</td>
-              <td style="color:var(--status-yellow); font-weight:600">38.2 MPa ⚠</td>
-              <td style="color:var(--status-yellow)">210 min ⚠</td>
-              <td>CPAC ลาดกระบัง</td><td>20/02/68 10:30</td>
-              <td><span style="background:var(--yellow-bg);color:var(--yellow);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">Review</span></td>
-            </tr>
-            <tr>
-              <td onclick="openModal()">DN-250220-004</td><td>SILO-7</td><td>LOT-46</td>
-              <td>24.5% / 1,960T</td>
-              <td style="color:var(--status-red); font-weight:600">37.1 MPa ✗</td>
-              <td style="color:var(--status-red)">218 min ✗</td>
-              <td>CPAC บางบัวทอง</td><td>20/02/68 11:15</td>
-              <td><span style="background:#FFEBEE;color:var(--status-red);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">Fail</span></td>
-            </tr>
-            <tr>
-              <td onclick="openModal()">DN-250220-005</td><td>SILO-3</td><td>LOT-47</td>
-              <td>14.2% / 1,136T</td>
-              <td style="color:var(--status-green); font-weight:600">42.5 MPa ✓</td>
-              <td style="color:var(--status-green)">188 min ✓</td>
-              <td>CPAC สุขุมวิท</td><td>20/02/68 12:00</td>
-              <td><span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">Pass</span></td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="panel-body" style="min-width:0; overflow-x:auto; padding:0;">
+        <div id="qtable-wrap" style="overflow-x:auto; padding:16px;"></div>
       </div>
     </div>
+
+    <!-- Quality Detail Panel (shown when DN clicked) -->
+    <div id="qdetail-panel" style="display:none; margin-top:16px;">
+      <div class="panel">
+        <div class="panel-header" style="background:var(--gray-50);">
+          <div class="panel-icon cement">📋</div>
+          <div>
+            <div class="panel-title" id="qd-title">ผลทดสอบคุณภาพซีเมนต์ — DN-250220-001</div>
+            <div class="panel-subtitle" id="qd-sub">SILO-1 · LOT-47 · STL ท่าหลวง · 20/02/68 08:14</div>
+          </div>
+          <button onclick="document.getElementById('qdetail-panel').style.display='none'"
+            style="margin-left:auto; background:none; border:1px solid var(--border); border-radius:4px; padding:4px 10px; cursor:pointer; font-size:12px; color:var(--gray-500);">✕ ปิด</button>
+        </div>
+        <div class="panel-body">
+          <div class="qd-groups">
+
+            <!-- Chemical Composition -->
+            <div class="qd-group">
+              <div class="qd-group-title">⚗️ องค์ประกอบทางเคมี (Chemical Composition)</div>
+              <div class="qd-param-grid" id="qd-chemical"></div>
+            </div>
+
+            <!-- Compound Composition -->
+            <div class="qd-group">
+              <div class="qd-group-title">🔬 Bogue Compound Composition</div>
+              <div class="qd-param-grid" id="qd-compound"></div>
+            </div>
+
+            <!-- Physical Properties -->
+            <div class="qd-group">
+              <div class="qd-group-title">📐 คุณสมบัติทางกายภาพ (Physical Properties)</div>
+              <div class="qd-param-grid" id="qd-physical"></div>
+            </div>
+
+            <!-- Strength -->
+            <div class="qd-group">
+              <div class="qd-group-title">💪 กำลังอัด (Compressive Strength)</div>
+              <div class="qd-strength-bars" id="qd-strength"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1354,6 +1444,275 @@ function updatePlantHeader(sel) {
 
 // ─── ESC to close ────────────────────────────────────────────────────────────
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ══════════════════════════════════════════════════════════════════
+// QUALITY TRACEABILITY DATA
+// ══════════════════════════════════════════════════════════════════
+const specLimits = {
+  SiO2:        { min: 19.0,  max: 22.0,  unit: '%' },
+  Al2O3:       { min: 4.0,   max: 6.5,   unit: '%' },
+  Fe2O3:       { min: 2.5,   max: 4.5,   unit: '%' },
+  CaO:         { min: 62.0,  max: 67.0,  unit: '%' },
+  MgO:         { min: null,  max: 5.0,   unit: '%' },
+  SO3:         { min: null,  max: 3.5,   unit: '%' },
+  K2O:         { min: null,  max: 1.5,   unit: '%' },
+  Na2O:        { min: null,  max: 0.6,   unit: '%' },
+  Alkalies:    { min: null,  max: 0.80,  unit: '%' },
+  LOI:         { min: null,  max: 3.0,   unit: '%' },
+  Insoluble:   { min: null,  max: 1.5,   unit: '%' },
+  C3S:         { min: 50.0,  max: 65.0,  unit: '%' },
+  C2S:         { min: 10.0,  max: 25.0,  unit: '%' },
+  C3A:         { min: 6.0,   max: 11.0,  unit: '%' },
+  C4AF:        { min: 8.0,   max: 14.0,  unit: '%' },
+  Blaine:      { min: 3200,  max: 3600,  unit: 'cm²/g' },
+  Autoclave:   { min: null,  max: 0.80,  unit: '%' },
+  VicatInitial:{ min: 120,   max: 180,   unit: 'นาที' },
+  VicatFinal:  { min: null,  max: 240,   unit: 'นาที' },
+  Aircontent:  { min: null,  max: 12.0,  unit: '%' },
+  STR1D:       { min: 12.0,  max: null,  unit: 'MPa' },
+  STR3D:       { min: 28.0,  max: null,  unit: 'MPa' },
+  STR7D:       { min: 34.0,  max: null,  unit: 'MPa' },
+  STR28D:      { min: 42.0,  max: null,  unit: 'MPa' },
+};
+
+const qDNData = [
+  {
+    dn:'DN-250220-001', silo:'SILO-1', lot:'LOT-47', plant:'STL', siloLvl:'67.4%', siloTon:'5,392T',
+    shipto:'CPAC บางนา-ตราด', bayout:'20/02/68 08:14', status:'pass',
+    q:{ SiO2:20.42, Al2O3:5.18, Fe2O3:3.21, CaO:64.85, MgO:1.92, SO3:2.41, K2O:0.52, Na2O:0.18, Alkalies:0.52,
+        LOI:1.82, Insoluble:0.62, C3S:58.4, C2S:16.2, C3A:8.7, C4AF:9.8,
+        Blaine:3420, Autoclave:0.12, VicatInitial:142, VicatFinal:185, Aircontent:7.2,
+        STR1D:14.8, STR3D:29.6, STR7D:36.2, STR28D:42.1 }
+  },
+  {
+    dn:'DN-250220-002', silo:'SILO-2', lot:'LOT-47', plant:'STL', siloLvl:'71.2%', siloTon:'5,696T',
+    shipto:'CPAC รัชดา', bayout:'20/02/68 09:02', status:'pass',
+    q:{ SiO2:20.18, Al2O3:5.04, Fe2O3:3.35, CaO:65.10, MgO:2.01, SO3:2.38, K2O:0.49, Na2O:0.16, Alkalies:0.48,
+        LOI:1.74, Insoluble:0.58, C3S:59.1, C2S:15.8, C3A:8.4, C4AF:10.2,
+        Blaine:3385, Autoclave:0.10, VicatInitial:148, VicatFinal:192, Aircontent:6.9,
+        STR1D:14.5, STR3D:29.1, STR7D:35.8, STR28D:41.8 }
+  },
+  {
+    dn:'DN-250220-003', silo:'SILO-7', lot:'LOT-46', plant:'STL', siloLvl:'28.1%', siloTon:'2,248T',
+    shipto:'CPAC ลาดกระบัง', bayout:'20/02/68 10:30', status:'warn',
+    q:{ SiO2:21.05, Al2O3:5.62, Fe2O3:3.48, CaO:63.20, MgO:2.35, SO3:2.88, K2O:0.64, Na2O:0.22, Alkalies:0.64,
+        LOI:2.11, Insoluble:0.88, C3S:54.2, C2S:18.9, C3A:9.1, C4AF:10.6,
+        Blaine:3210, Autoclave:0.22, VicatInitial:162, VicatFinal:210, Aircontent:8.4,
+        STR1D:12.8, STR3D:27.4, STR7D:33.5, STR28D:38.2 }
+  },
+  {
+    dn:'DN-250220-004', silo:'SILO-7', lot:'LOT-46', plant:'STL', siloLvl:'24.5%', siloTon:'1,960T',
+    shipto:'CPAC บางบัวทอง', bayout:'20/02/68 11:15', status:'fail',
+    q:{ SiO2:21.38, Al2O3:5.85, Fe2O3:3.55, CaO:62.80, MgO:2.48, SO3:3.02, K2O:0.71, Na2O:0.25, Alkalies:0.72,
+        LOI:2.35, Insoluble:1.02, C3S:52.8, C2S:19.4, C3A:9.5, C4AF:10.8,
+        Blaine:3150, Autoclave:0.31, VicatInitial:170, VicatFinal:218, Aircontent:9.1,
+        STR1D:11.9, STR3D:25.8, STR7D:32.1, STR28D:37.1 }
+  },
+  {
+    dn:'DN-250220-005', silo:'SILO-3', lot:'LOT-47', plant:'STL', siloLvl:'14.2%', siloTon:'1,136T',
+    shipto:'CPAC สุขุมวิท', bayout:'20/02/68 12:00', status:'pass',
+    q:{ SiO2:20.05, Al2O3:4.98, Fe2O3:3.18, CaO:65.42, MgO:1.88, SO3:2.35, K2O:0.47, Na2O:0.15, Alkalies:0.46,
+        LOI:1.68, Insoluble:0.55, C3S:60.2, C2S:15.1, C3A:8.2, C4AF:9.7,
+        Blaine:3480, Autoclave:0.09, VicatInitial:138, VicatFinal:188, Aircontent:6.8,
+        STR1D:15.2, STR3D:30.4, STR7D:37.1, STR28D:42.5 }
+  },
+  {
+    dn:'DN-250219-047', silo:'SILO-1', lot:'LOT-47', plant:'STL', siloLvl:'72.1%', siloTon:'5,768T',
+    shipto:'CPAC รัชดา', bayout:'19/02/68 15:22', status:'pass',
+    q:{ SiO2:20.28, Al2O3:5.10, Fe2O3:3.24, CaO:64.95, MgO:1.95, SO3:2.42, K2O:0.51, Na2O:0.17, Alkalies:0.50,
+        LOI:1.79, Insoluble:0.60, C3S:58.8, C2S:16.0, C3A:8.5, C4AF:9.9,
+        Blaine:3410, Autoclave:0.11, VicatInitial:144, VicatFinal:188, Aircontent:7.0,
+        STR1D:14.9, STR3D:29.8, STR7D:36.5, STR28D:42.3 }
+  },
+];
+
+// ── Helper: check spec status ────────────────────────────────────
+function getParamStatus(key, val) {
+  const s = specLimits[key];
+  if (!s) return 'na';
+  if (s.min !== null && val < s.min) return 'fail';
+  if (s.max !== null && val > s.max) return 'fail';
+  const range = (s.max||100) - (s.min||0);
+  const warn = range * 0.1;
+  if (s.min !== null && val < s.min + warn) return 'warn';
+  if (s.max !== null && val > s.max - warn) return 'warn';
+  return 'ok';
+}
+
+function statusIcon(st) {
+  if (st === 'ok') return '✓';
+  if (st === 'warn') return '!';
+  if (st === 'fail') return '✗';
+  return '—';
+}
+
+function formatSpec(key) {
+  const s = specLimits[key];
+  if (!s) return '';
+  if (s.min !== null && s.max !== null) return `${s.min}–${s.max} ${s.unit}`;
+  if (s.min !== null) return `≥ ${s.min} ${s.unit}`;
+  if (s.max !== null) return `≤ ${s.max} ${s.unit}`;
+  return '';
+}
+
+// ── Param cell ────────────────────────────────────────────────────
+function makeParamCell(key, val) {
+  const s = specLimits[key] || { unit: '' };
+  const st = getParamStatus(key, val);
+  return `
+  <div class="qd-param">
+    <div class="qd-param-badge ${st}">${statusIcon(st)}</div>
+    <div class="qd-param-name">${key}</div>
+    <div class="qd-param-val ${st}">${val !== undefined ? val.toFixed(val >= 100 ? 0 : 2) : '—'}</div>
+    <div class="qd-param-unit">${s.unit}</div>
+    <div class="qd-param-spec">${formatSpec(key)}</div>
+  </div>`;
+}
+
+// ── Strength bar ──────────────────────────────────────────────────
+function makeStrBar(label, val, spec, maxVal) {
+  const pct = Math.min(100, (val / maxVal) * 100);
+  const specPct = Math.min(100, (spec / maxVal) * 100);
+  const st = getParamStatus(label === '1D' ? 'STR1D' : label === '3D' ? 'STR3D' : label === '7D' ? 'STR7D' : 'STR28D', val);
+  const colors = { ok: '#4CAF50', warn: '#FFC107', fail: '#F44336' };
+  const color = colors[st] || '#9E9E9E';
+  const stName = val.toFixed(1);
+  return `
+  <div class="str-row">
+    <div class="str-label">${label}</div>
+    <div class="str-bar-wrap">
+      <div class="str-bar" style="width:${pct}%; background:${color};">
+        <span>${stName}</span>
+      </div>
+      <div class="str-target-line" style="left:${specPct}%;" title="Spec: ${spec} MPa"></div>
+    </div>
+    <div class="str-val" style="color:${color}">${stName} MPa</div>
+    <div class="str-spec">≥ ${spec} MPa</div>
+  </div>`;
+}
+
+// ── Overall status badge ──────────────────────────────────────────
+function statusBadge(st) {
+  if (st === 'pass') return `<span style="background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">✓ Pass</span>`;
+  if (st === 'warn') return `<span style="background:var(--yellow-bg);color:var(--yellow);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">⚠ Review</span>`;
+  return `<span style="background:#FFEBEE;color:var(--status-red);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600">✗ Fail</span>`;
+}
+
+// ── Main Q-table renderer ─────────────────────────────────────────
+function renderQTable() {
+  const mode = document.getElementById('qview-mode').value;
+
+  const chemKeys    = ['SiO2','Al2O3','Fe2O3','CaO','MgO','SO3','K2O','Na2O','Alkalies','LOI','Insoluble'];
+  const compndKeys  = ['C3S','C2S','C3A','C4AF'];
+  const physKeys    = ['Blaine','Autoclave','VicatInitial','VicatFinal','Aircontent'];
+  const strKeys     = ['STR1D','STR3D','STR7D','STR28D'];
+
+  let extraCols = [];
+  if (mode === 'chemical')  extraCols = chemKeys;
+  if (mode === 'compound')  extraCols = compndKeys;
+  if (mode === 'physical')  extraCols = physKeys;
+  if (mode === 'all')       extraCols = [...chemKeys,...compndKeys,...physKeys,...strKeys];
+  // summary always shows STR + Setting
+  const summaryExtra = ['STR1D','STR3D','STR7D','STR28D','VicatInitial','VicatFinal'];
+  if (mode === 'summary') extraCols = summaryExtra;
+
+  const units = { STR1D:'MPa', STR3D:'MPa', STR7D:'MPa', STR28D:'MPa',
+    VicatInitial:'นาที', VicatFinal:'นาที', Blaine:'cm²/g',
+    Autoclave:'%', Aircontent:'%' };
+
+  const colLabel = {
+    SiO2:'SiO₂', Al2O3:'Al₂O₃', Fe2O3:'Fe₂O₃', CaO:'CaO', MgO:'MgO',
+    SO3:'SO₃', K2O:'K₂O', Na2O:'Na₂O', Alkalies:'Alkalies', LOI:'LOI', Insoluble:'Insol.',
+    C3S:'C₃S', C2S:'C₂S', C3A:'C₃A', C4AF:'C₄AF',
+    Blaine:'Blaine', Autoclave:'Autoclave', VicatInitial:'Vicat Init.', VicatFinal:'Vicat Final',
+    Aircontent:'Air%', STR1D:'1D MPa', STR3D:'3D MPa', STR7D:'7D MPa', STR28D:'28D MPa'
+  };
+
+  let thead = `<tr>
+    <th style="position:sticky;left:0;background:#F5F5F5;z-index:2">DN No.</th>
+    <th>Plant</th><th>SILO</th><th>Lot</th>
+    <th>Silo Level @ Dispatch</th>
+    <th>SHIPTO</th><th>Bay Out</th>`;
+  extraCols.forEach(k => {
+    thead += `<th style="text-align:center">${colLabel[k]||k}</th>`;
+  });
+  thead += `<th style="text-align:center">Status</th></tr>`;
+
+  let tbody = '';
+  qDNData.forEach((row, i) => {
+    const q = row.q;
+    // overall worst status across shown cols
+    let worst = 'ok';
+    extraCols.forEach(k => {
+      const st = getParamStatus(k, q[k]);
+      if (st === 'fail') worst = 'fail';
+      else if (st === 'warn' && worst !== 'fail') worst = 'warn';
+    });
+    const rowStatus = row.status; // use DN-level status
+
+    let cols = '';
+    extraCols.forEach(k => {
+      const val = q[k];
+      const st = getParamStatus(k, val);
+      const color = st === 'ok' ? 'var(--status-green)' : st === 'warn' ? 'var(--status-yellow)' : st === 'fail' ? 'var(--status-red)' : 'var(--gray-300)';
+      const u = specLimits[k] ? specLimits[k].unit : '';
+      cols += `<td style="text-align:center; font-family:var(--mono); font-size:11px; color:${color}; font-weight:600">${val !== undefined ? val.toFixed(val >= 100 ? 0 : 2) : '—'}<span style="font-size:9px;color:var(--gray-400);font-weight:400"> ${u}</span></td>`;
+    });
+
+    tbody += `<tr id="qrow-${i}" onclick="showQDetail(${i}, this)">
+      <td class="dn-link" style="position:sticky;left:0;background:white;white-space:nowrap">${row.dn}</td>
+      <td style="font-weight:600;color:var(--red)">${row.plant}</td>
+      <td>${row.silo}</td>
+      <td style="font-family:var(--mono)">${row.lot}</td>
+      <td style="font-family:var(--mono);font-size:11px">${row.siloLvl} / ${row.siloTon}</td>
+      <td style="white-space:nowrap">${row.shipto}</td>
+      <td style="font-family:var(--mono);font-size:11px;white-space:nowrap">${row.bayout}</td>
+      ${cols}
+      <td style="text-align:center">${statusBadge(rowStatus)}</td>
+    </tr>`;
+  });
+
+  document.getElementById('qtable-wrap').innerHTML =
+    `<table class="dt" style="min-width:max-content; width:100%"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;
+}
+
+// ── Show quality detail panel ─────────────────────────────────────
+function showQDetail(idx, rowEl) {
+  // highlight row
+  document.querySelectorAll('#qtable-wrap tr').forEach(r => r.classList.remove('selected'));
+  rowEl.classList.add('selected');
+
+  const row = qDNData[idx];
+  const q = row.q;
+
+  document.getElementById('qd-title').textContent = `ผลทดสอบคุณภาพซีเมนต์ — ${row.dn}`;
+  document.getElementById('qd-sub').textContent = `${row.silo} · ${row.lot} · ${row.plant} · ${row.shipto} · ${row.bayout}`;
+
+  // Chemical
+  const chemKeys = ['SiO2','Al2O3','Fe2O3','CaO','MgO','SO3','K2O','Na2O','Alkalies','LOI','Insoluble'];
+  document.getElementById('qd-chemical').innerHTML = chemKeys.map(k => makeParamCell(k, q[k])).join('');
+
+  // Compound
+  const compKeys = ['C3S','C2S','C3A','C4AF'];
+  document.getElementById('qd-compound').innerHTML = compKeys.map(k => makeParamCell(k, q[k])).join('');
+
+  // Physical
+  const physKeys = ['Blaine','Autoclave','VicatInitial','VicatFinal','Aircontent'];
+  document.getElementById('qd-physical').innerHTML = physKeys.map(k => makeParamCell(k, q[k])).join('');
+
+  // Strength bars
+  document.getElementById('qd-strength').innerHTML = `
+    ${makeStrBar('1D',  q.STR1D,  12.0, 50)}
+    ${makeStrBar('3D',  q.STR3D,  28.0, 50)}
+    ${makeStrBar('7D',  q.STR7D,  34.0, 50)}
+    ${makeStrBar('28D', q.STR28D, 42.0, 60)}`;
+
+  document.getElementById('qdetail-panel').style.display = '';
+  document.getElementById('qdetail-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Initial render
+renderQTable();
 </script>
 </body>
 </html>
