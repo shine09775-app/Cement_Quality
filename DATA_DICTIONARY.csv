@@ -1,0 +1,148 @@
+﻿ชื่อ,ค่าหน่วยที่วัด,คำอธิบาย,ชื่อ Table,Table อ้างอิง,Data Type,Required,Example
+plantCode,code,รหัสโรงปูน,plants,-,string,Y,STL
+plantName,n/a,ชื่อโรงปูน,plants,-,string,Y,Tha Luang
+province,n/a,จังหวัดที่ตั้งโรงปูน,plants,-,string,Y,Saraburi
+online,boolean,สถานะการเชื่อมต่อโรงปูน,plants,-,boolean,Y,true
+hasWarning,boolean,สถานะเตือนของโรงปูน,plants,-,boolean,Y,false
+updatedAt,datetime,เวลาที่อัปเดตล่าสุด,plants,-,date-time,Y,2026-02-23T07:32:00Z
+lat,lat,ละติจูดของโรงปูน,plants,-,number,Y,14.6401
+lng,lng,ลองจิจูดของโรงปูน,plants,-,number,Y,100.9126
+cpacPlantId,code,รหัสสาขา CPAC,cpac_plants,-,string,Y,BNA-TRD
+cpacPlantName,n/a,ชื่อสาขา CPAC,cpac_plants,-,string,Y,Bangna-Trad
+province,n/a,จังหวัดของสาขา CPAC,cpac_plants,-,string,Y,Bangkok
+online,boolean,สถานะการเชื่อมต่อสาขา CPAC,cpac_plants,-,boolean,Y,true
+updatedAt,datetime,เวลาที่อัปเดตล่าสุด,cpac_plants,-,date-time,Y,2026-02-23T07:32:00Z
+plantCode,code,รหัสโรงปูนเจ้าของสถิติ,plant_header_stats,plants,string,Y,STL
+totalStockTon,ton,สต็อกรวมของโรง,plant_header_stats,plants,number,Y,42850
+utilizationPct,%,เปอร์เซ็นต์การใช้ความจุรวม,plant_header_stats,plants,number,Y,67.4
+totalSilos,count,จำนวนไซโลทั้งหมดของโรง,plant_header_stats,plants,integer,Y,10
+cpacPlantId,code,รหัสสาขา CPAC เจ้าของสถิติ,cpac_header_stats,cpac_plants,string,Y,BNA-TRD
+totalStockTon,ton,สต็อกรวมของสาขา CPAC,cpac_header_stats,cpac_plants,number,Y,342
+sourcePlants,codes,โรงต้นทางที่ส่งปูนเข้า CPAC,cpac_header_stats,plants,array<string>,Y,"[STL,SKK]"
+totalSilos,count,จำนวนไซโลทั้งหมดของ CPAC,cpac_header_stats,cpac_plants,integer,Y,4
+plantCode,code,รหัสโรงปูนของสรุปหน้า dashboard,plant_summary,plants,string,Y,STL
+normalSiloCount,count,จำนวนไซโลสถานะปกติ,plant_summary,silos,integer,Y,6
+lowSiloCount,count,จำนวนไซโลระดับต่ำ,plant_summary,silos,integer,Y,2
+criticalSiloCount,count,จำนวนไซโลวิกฤต,plant_summary,silos,integer,Y,1
+dispatchCountToday,count,จำนวน DN วันนี้,plant_summary,dn_quality_records,integer,Y,28
+currentLotNo,lot,เลข lot ปัจจุบันของโรง,plant_summary,silos,string,Y,LOT-47
+currentLotStatus,status,สถานะคุณภาพ lot ปัจจุบัน,plant_summary,dn_quality_records,string,Y,pass
+currentLotSourcePlant,code,โรงต้นทางของ lot ปัจจุบัน,plant_summary,plants,string,N,STL
+alertId,code,รหัสเหตุการณ์เตือน,alerts,-,string,Y,ALT-20260223-001
+plantCode,code,โรงปูนที่เกิด alert,alerts,plants,string,N,STL
+type,enum,ประเภทการเตือน,alerts,-,string,Y,inventory_low
+severity,enum,ระดับความรุนแรง,alerts,-,string,Y,warn
+message,n/a,ข้อความแจ้งเตือน,alerts,-,string,Y,SILO 3 below min level
+siloId,code,รหัสไซโล,silos,-,string,Y,stl-silo-1
+plantCode,code,โรงปูนเจ้าของไซโล,silos,plants,string,N,STL
+cpacPlantId,code,สาขา CPAC เจ้าของไซโล,silos,cpac_plants,string,N,BNA-TRD
+siloName,name,ชื่อไซโล,silos,-,string,Y,SILO 1
+brand,n/a,ชื่อแบรนด์/เกรดปูน,silos,-,string,Y,SCG SHC
+siloType,enum,ประเภทไซโล,silos,-,string,Y,cement
+capacityTon,ton,ความจุไซโล,silos,-,number,Y,8000
+currentVolumeTon,ton,ปริมาณปัจจุบันในไซโล,silos,-,number,Y,5392
+minTon,ton,ค่าระดับต่ำสุดที่กำหนด,silos,-,number,Y,800
+maxTon,ton,ค่าระดับสูงสุดที่กำหนด,silos,-,number,Y,7680
+lotNo,lot,เลข lot ปัจจุบันของไซโล,silos,-,string,N,LOT-47
+qualityStatus,enum,สถานะคุณภาพไซโล,silos,-,string,Y,ok
+noData,boolean,ธงบอกว่าไม่มีข้อมูลสัญญาณ,silos,-,boolean,Y,false
+lastQualityTestAt,datetime,เวลาทดสอบคุณภาพล่าสุด,silos,-,date-time,N,2026-02-23T07:10:00Z
+sourcePlants,codes,โรงต้นทางของปูนในไซโล,silos,plants,array<string>,N,"[STL,SKK]"
+cpacPlantId,code,สาขา CPAC ที่ทำ blend,source_blend,cpac_plants,string,Y,BNA-TRD
+lotNo,lot,lot ที่ใช้ blend,source_blend,silos,string,Y,LOT-47
+description,n/a,คำอธิบาย blend,source_blend,-,string,Y,Blend estimate by source plant
+cpacPlantId,code,สาขา CPAC เจ้าของสัดส่วน blend,blend_ratios,cpac_plants,string,Y,BNA-TRD
+lotNo,lot,lot ที่อ้างอิง,blend_ratios,source_blend,string,Y,LOT-47
+plantCode,code,โรงต้นทางในสัดส่วน blend,blend_ratios,plants,string,Y,STL
+ratioPct,%,สัดส่วนการผสมของแต่ละโรง,blend_ratios,source_blend,number,Y,60
+parameterKey,code,ชื่อ parameter คุณภาพ,spec_limits,-,string,Y,STR28D
+min,unit-based,ค่าต่ำสุดตามสเปค,spec_limits,-,number,N,42.0
+max,unit-based,ค่าสูงสุดตามสเปค,spec_limits,-,number,N,
+unit,unit,หน่วยวัดของ parameter,spec_limits,-,string,Y,MPa
+dnNo,code,เลขที่ DN,dn_quality_records,-,string,Y,DN-250220-001
+plantCode,code,โรงปูนต้นทาง DN,dn_quality_records,plants,string,Y,STL
+siloName,name,ไซโลที่จ่ายใน DN,dn_quality_records,silos,string,Y,SILO-1
+lotNo,lot,lot ที่จ่ายใน DN,dn_quality_records,silos,string,Y,LOT-47
+shipTo,n/a,ปลายทาง CPAC,dn_quality_records,cpac_plants,string,Y,CPAC Bangna-Trad
+bayOutAt,datetime,เวลา bay out,dn_quality_records,-,date-time,Y,2026-02-20T01:14:00Z
+dispatchQtyTon,ton,ปริมาณที่จ่ายใน DN,dn_quality_records,-,number,N,28.5
+dispatchSiloLevelPct,%,ระดับไซโลขณะจ่าย,dn_quality_records,silos,number,Y,67.4
+dispatchSiloTon,ton,ตันคงเหลือขณะจ่าย,dn_quality_records,silos,number,Y,5392
+status,enum,ผลสถานะ DN,dn_quality_records,-,string,Y,pass
+dnNo,code,เลขที่ DN อ้างอิงคุณภาพ,quality_metrics,dn_quality_records,string,Y,DN-250220-001
+SiO2,%,Silicon dioxide,quality_metrics,spec_limits,number,Y,20.42
+Al2O3,%,Aluminum oxide,quality_metrics,spec_limits,number,Y,5.18
+Fe2O3,%,Iron oxide,quality_metrics,spec_limits,number,Y,3.21
+CaO,%,Calcium oxide,quality_metrics,spec_limits,number,Y,64.85
+MgO,%,Magnesium oxide,quality_metrics,spec_limits,number,Y,1.92
+SO3,%,Sulfur trioxide,quality_metrics,spec_limits,number,Y,2.41
+K2O,%,Potassium oxide,quality_metrics,spec_limits,number,Y,0.52
+Na2O,%,Sodium oxide,quality_metrics,spec_limits,number,Y,0.18
+Alkalies,%,Equivalent alkali,quality_metrics,spec_limits,number,Y,0.52
+LOI,%,Loss on ignition,quality_metrics,spec_limits,number,Y,1.82
+Insoluble,%,Insoluble residue,quality_metrics,spec_limits,number,Y,0.62
+C3S,%,Tricalcium silicate,quality_metrics,spec_limits,number,Y,58.4
+C2S,%,Dicalcium silicate,quality_metrics,spec_limits,number,Y,16.2
+C3A,%,Tricalcium aluminate,quality_metrics,spec_limits,number,Y,8.7
+C4AF,%,Tetracalcium aluminoferrite,quality_metrics,spec_limits,number,Y,9.8
+Blaine,cm2/g,Specific surface fineness,quality_metrics,spec_limits,number,Y,3420
+Autoclave,%,Autoclave expansion,quality_metrics,spec_limits,number,Y,0.12
+VicatInitial,min,Initial setting time,quality_metrics,spec_limits,number,Y,142
+VicatFinal,min,Final setting time,quality_metrics,spec_limits,number,Y,185
+Aircontent,%,Air content,quality_metrics,spec_limits,number,Y,7.2
+STR1D,MPa,Compressive strength 1 day,quality_metrics,spec_limits,number,Y,14.8
+STR3D,MPa,Compressive strength 3 days,quality_metrics,spec_limits,number,Y,29.6
+STR7D,MPa,Compressive strength 7 days,quality_metrics,spec_limits,number,Y,36.2
+STR28D,MPa,Compressive strength 28 days,quality_metrics,spec_limits,number,Y,42.1
+plantCode,code,รหัสโรงบน marker แผนที่,map_cement_plant_markers,plants,string,Y,STL
+plantName,n/a,ชื่อโรงบน marker แผนที่,map_cement_plant_markers,plants,string,Y,Tha Luang
+province,n/a,จังหวัดโรงบน marker แผนที่,map_cement_plant_markers,plants,string,Y,Saraburi
+lat,lat,ละติจูด marker โรง,map_cement_plant_markers,-,number,Y,14.6401
+lng,lng,ลองจิจูด marker โรง,map_cement_plant_markers,-,number,Y,100.9126
+hasWarning,boolean,โรงนั้นมี warning หรือไม่,map_cement_plant_markers,plants,boolean,Y,false
+pointId,code,รหัสจุด CPAC บนแผนที่,map_cpac_points,-,string,Y,CPAC-POINT-0001
+lat,lat,ละติจูดจุด CPAC,map_cpac_points,-,number,Y,13.7563
+lng,lng,ลองจิจูดจุด CPAC,map_cpac_points,-,number,Y,100.5018
+alertId,code,รหัสจุดเตือนคุณภาพ,map_quality_alerts,-,string,Y,QALT-001
+lat,lat,ละติจูดจุดเตือน,map_quality_alerts,-,number,Y,13.6900
+lng,lng,ลองจิจูดจุดเตือน,map_quality_alerts,-,number,Y,100.7500
+label,n/a,ข้อความบน tooltip,map_quality_alerts,-,string,Y,Quality Alert
+messageId,uuid,รหัสข้อความ ingest จากต้นทาง,ingest_metadata,-,string,Y,efd0d370-e826-4c76-b9e5-4c157f9d2f50
+sourceSystem,code,รหัสระบบต้นทางที่ส่งข้อมูล,ingest_metadata,-,string,Y,STL-SCADA-GW01
+observedAt,datetime,เวลาที่เหตุการณ์เกิดที่ต้นทาง,ingest_metadata,-,date-time,Y,2026-02-23T07:32:00Z
+sentAt,datetime,เวลาที่ส่งจาก producer,ingest_metadata,-,date-time,N,2026-02-23T07:32:02Z
+schemaVersion,version,เวอร์ชัน payload,ingest_metadata,-,string,N,1.0
+online,boolean,สถานะ heartbeat จากโรง,plant_heartbeat_ingest,ingest_metadata,boolean,Y,true
+totalStockTon,ton,สต็อกรวมจาก heartbeat,plant_heartbeat_ingest,ingest_metadata,number,Y,42850
+utilizationPct,%,การใช้ความจุจาก heartbeat,plant_heartbeat_ingest,ingest_metadata,number,Y,67.4
+totalSilos,count,จำนวนไซโลจาก heartbeat,plant_heartbeat_ingest,ingest_metadata,integer,Y,10
+recordedAt,datetime,เวลาที่อ่านค่าจาก sensor,silo_realtime_readings,ingest_metadata,date-time,Y,2026-02-23T07:34:58Z
+siloId,code,รหัสไซโลจากระบบต้นทาง,silo_realtime_readings,silos,string,Y,stl-silo-1
+siloName,name,ชื่อไซโลที่รายงาน,silo_realtime_readings,silos,string,Y,SILO 1
+brand,n/a,แบรนด์ปูนที่อยู่ในไซโล,silo_realtime_readings,silos,string,Y,SCG SHC
+siloType,enum,ประเภทไซโล,silo_realtime_readings,silos,string,Y,cement
+capacityTon,ton,ความจุไซโลที่รายงาน,silo_realtime_readings,silos,number,Y,8000
+currentVolumeTon,ton,ปริมาณปัจจุบันที่รายงาน,silo_realtime_readings,silos,number,Y,5392
+minTon,ton,ค่า min ที่รายงาน,silo_realtime_readings,silos,number,Y,800
+maxTon,ton,ค่า max ที่รายงาน,silo_realtime_readings,silos,number,Y,7680
+lotNo,lot,lot ที่อ่านได้จากไซโล,silo_realtime_readings,silos,string,N,LOT-47
+qualityStatus,enum,สถานะคุณภาพที่แนบมากับ reading,silo_realtime_readings,silos,string,Y,ok
+noData,boolean,ค่า no data จากต้นทาง,silo_realtime_readings,silos,boolean,Y,false
+lastQualityTestAt,datetime,เวลาทดสอบล่าสุดที่แนบมากับ reading,silo_realtime_readings,silos,date-time,N,2026-02-23T07:10:00Z
+sourcePlants,codes,โรงต้นทางที่แนบมากับ reading,silo_realtime_readings,plants,array<string>,N,"[STL,SKK]"
+ackId,code,รหัสตอบกลับของระบบ ingest,ingest_batch_ack,-,string,Y,ACK-20260223-0001
+status,enum,ผลการรับข้อมูล batch,ingest_batch_ack,-,string,Y,partial
+receivedAt,datetime,เวลาที่ระบบรับข้อมูล,ingest_batch_ack,-,date-time,Y,2026-02-23T07:35:01Z
+acceptedCount,count,จำนวนรายการที่รับได้,ingest_batch_ack,-,integer,Y,9
+rejectedCount,count,จำนวนรายการที่ reject,ingest_batch_ack,-,integer,Y,1
+errors,count,รายการ error ต่อรายการใน batch,ingest_batch_ack,ingest_errors,array<object>,N,
+ackId,code,รหัสตอบกลับ upsert,ingest_upsert_ack,-,string,Y,ACK-20260223-0002
+status,enum,ผลการรับข้อมูล upsert,ingest_upsert_ack,-,string,Y,accepted
+receivedAt,datetime,เวลาที่ระบบรับข้อมูล upsert,ingest_upsert_ack,-,date-time,Y,2026-02-23T07:35:02Z
+upsertAction,enum,ผลลัพธ์ create/update/ignore,ingest_upsert_ack,-,string,Y,updated
+resourceId,code,รหัส resource ที่ถูกอัปเดต,ingest_upsert_ack,-,string,Y,stl-silo-1
+warnings,n/a,ข้อความเตือนใน upsert,ingest_upsert_ack,-,array<string>,N,
+index,index,ตำแหน่ง record ที่ผิดใน batch,ingest_errors,ingest_batch_ack,integer,N,0
+field,n/a,ชื่อฟิลด์ที่ผิด,ingest_errors,ingest_batch_ack,string,N,dispatchSiloLevelPct
+code,code,รหัส error,ingest_errors,ingest_batch_ack,string,Y,VALIDATION_ERROR
+message,n/a,ข้อความอธิบาย error,ingest_errors,ingest_batch_ack,string,Y,dispatchSiloLevelPct must be <= 100

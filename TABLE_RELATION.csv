@@ -1,0 +1,27 @@
+﻿Table,PK,FK,อ้างอิงไปยัง,Cardinality,หมายเหตุ
+plants,plantCode,-,-,1:1,master โรงปูน
+cpac_plants,cpacPlantId,-,-,1:1,master สาขา CPAC
+plant_header_stats,plantCode,plantCode,plants,1:1,สถิติปัจจุบันของโรง
+cpac_header_stats,cpacPlantId,cpacPlantId,cpac_plants,1:1,สถิติปัจจุบันของสาขา CPAC
+plant_summary,plantCode,plantCode,plants,1:1,สรุปสถานะหน้า dashboard
+alerts,alertId,plantCode,plants,N:1,เหตุการณ์เตือนต่อโรง
+silos,siloId,plantCode,plants,N:1,ไซโลของโรงปูน
+silos,siloId,cpacPlantId,cpac_plants,N:1,ไซโลของสาขา CPAC
+source_blend,"cpacPlantId+lotNo",cpacPlantId,cpac_plants,N:1,ชุดข้อมูล blend ต่อ lot
+blend_ratios,"cpacPlantId+lotNo+plantCode","cpacPlantId+lotNo",source_blend,N:1,สัดส่วนโรงต้นทางในแต่ละ lot
+blend_ratios,"cpacPlantId+lotNo+plantCode",plantCode,plants,N:1,เชื่อมไปยังโรงต้นทาง
+spec_limits,parameterKey,-,-,1:1,master สเปคแต่ละ parameter
+dn_quality_records,dnNo,plantCode,plants,N:1,เอกสาร DN จากโรงปูน
+dn_quality_records,dnNo,siloName,silos,N:1,DN อ้างถึงไซโลที่จ่าย
+quality_metrics,dnNo,dnNo,dn_quality_records,1:1,ผลแล็บต่อ DN
+quality_metrics,dnNo,parameterKey,spec_limits,N:1 logical,validation เทียบกับสเปค
+map_cement_plant_markers,plantCode,plantCode,plants,1:1,ข้อมูล marker โรงปูน
+map_cpac_points,pointId,-,-,N:1 logical,จุด CPAC บนแผนที่ประเทศ
+map_quality_alerts,alertId,alertId,alerts,1:1 optional,จุดแจ้งเตือนบนแผนที่
+ingest_metadata,messageId,-,-,1:1,event envelope จากต้นทาง
+plant_heartbeat_ingest,messageId,messageId,ingest_metadata,1:1,payload heartbeat
+silo_realtime_readings,"messageId+siloId",messageId,ingest_metadata,N:1,รายการ reading ต่อ 1 message
+silo_realtime_readings,"messageId+siloId",siloId,silos,N:1,เชื่อม reading กับ master silo
+ingest_batch_ack,ackId,-,-,1:1,ผลตอบรับการรับ batch
+ingest_errors,"ackId+index",ackId,ingest_batch_ack,N:1,รายละเอียด error ใน batch
+ingest_upsert_ack,ackId,-,-,1:1,ผลตอบรับการ upsert รายการเดียว

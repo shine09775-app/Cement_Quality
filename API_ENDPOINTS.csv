@@ -1,0 +1,16 @@
+﻿Method,Path,Summary,Request Table,Response Table,Realtime,Idempotency Key,Owner
+GET,/plants,List cement plants,-,plants,false,no,Planning
+GET,/plants/{plantCode}/dashboard,Get cement plant dashboard snapshot,-,plant_dashboard_response,false,no,Operations
+GET,/cpac-plants,List CPAC branch plants,-,cpac_plants,false,no,Planning
+GET,/cpac-plants/{cpacPlantId}/dashboard,Get CPAC branch dashboard snapshot,-,cpac_dashboard_response,false,no,Operations
+GET,/cpac-plants/{cpacPlantId}/silos,List silo statuses in a CPAC branch,cpac_silo_filters,silos,false,no,Operations
+GET,/quality/spec-limits,Get cement quality parameter specification limits,-,spec_limits,false,no,Quality
+GET,/quality/dn-records,Search dispatch quality traceability records,dn_quality_query,dn_quality_record_list,false,no,Quality
+GET,/quality/dn-records/{dnNo},Get DN quality record detail,-,dn_quality_records,false,no,Quality
+PATCH,/quality/dn-records/{dnNo}/status,Update DN-level quality status,dn_status_patch,dn_quality_records,false,no,Quality
+POST,/ingest/plants/{plantCode}/heartbeat,Ingest plant heartbeat and header stats in real time,plant_heartbeat_ingest,ingest_upsert_ack,true,optional,Integration
+POST,/ingest/plants/{plantCode}/silo-readings,Ingest real-time silo telemetry in batch,silo_readings_ingest,ingest_batch_ack,true,optional,Integration
+PUT,/ingest/plants/{plantCode}/silos/{siloId}/state,Upsert latest state for one silo,silo_state_upsert,ingest_upsert_ack,true,optional,Integration
+POST,/ingest/plants/{plantCode}/quality/dn-records,Ingest new DN quality traceability record,dn_quality_ingest_create,ingest_upsert_ack,true,optional,Integration
+PUT,/ingest/plants/{plantCode}/quality/dn-records/{dnNo},Upsert DN quality traceability record,dn_quality_ingest_upsert,ingest_upsert_ack,true,optional,Integration
+GET,/map/national,Get map marker data for national map view,-,national_map_data,false,no,Operations
