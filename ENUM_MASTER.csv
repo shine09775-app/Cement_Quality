@@ -1,0 +1,27 @@
+﻿EnumName,Scope,AllowedValue,Description,ReferencedBy
+PlantCode,components.schemas,SLP,Lampang Cement Plant,CementPlant.plantCode|PlantSummary.currentLotSourcePlant|BlendRatio.plantCode
+PlantCode,components.schemas,STL,Tha Luang Cement Plant,CementPlant.plantCode|DnQualityRecord.plantCode|SiloStatus.sourcePlants[]
+PlantCode,components.schemas,SKW,Khao Wong Cement Plant,CementPlant.plantCode
+PlantCode,components.schemas,SKK,Kaeng Khoi Cement Plant,CementPlant.plantCode|SiloStatus.sourcePlants[]
+PlantCode,components.schemas,STS,Thung Song Cement Plant,CementPlant.plantCode
+DnStatus,components.schemas,pass,Meets quality criteria,DnQualityRecord.status|PlantSummary.currentLotStatus
+DnStatus,components.schemas,warn,Needs review,DnQualityRecord.status|PATCH /quality/dn-records/{dnNo}/status
+DnStatus,components.schemas,fail,Out of specification,DnQualityRecord.status
+SiloQualityStatus,components.schemas,ok,Silo quality normal,SiloStatus.qualityStatus|SiloRealtimeReading.qualityStatus
+SiloQualityStatus,components.schemas,warn,Silo quality warning,SiloStatus.qualityStatus|SiloRealtimeReading.qualityStatus
+SiloQualityStatus,components.schemas,fail,Silo quality failed,SiloStatus.qualityStatus|SiloRealtimeReading.qualityStatus
+SiloQualityStatus,components.schemas,na,No quality status available,SiloStatus.qualityStatus|SiloRealtimeReading.qualityStatus
+IngestAckStatus,components.schemas,accepted,Ingest accepted,IngestBatchAck.status|IngestUpsertAck.status
+IngestAckStatus,components.schemas,partial,Partially accepted with some rejects,IngestBatchAck.status|IngestUpsertAck.status
+IngestAckStatus,components.schemas,rejected,Fully rejected,IngestBatchAck.status|IngestUpsertAck.status
+UpsertAction,components.schemas,created,Created new resource,IngestUpsertAck.upsertAction
+UpsertAction,components.schemas,updated,Updated existing resource,IngestUpsertAck.upsertAction
+UpsertAction,components.schemas,ignored,Ignored due to dedupe/stale event,IngestUpsertAck.upsertAction
+AlertType,components.schemas.AlertItem.type,inventory_low,Inventory below threshold,AlertItem.type
+AlertType,components.schemas.AlertItem.type,quality_trend,Quality trend anomaly,AlertItem.type
+AlertType,components.schemas.AlertItem.type,no_data,No signal/data received,AlertItem.type
+AlertType,components.schemas.AlertItem.type,custom,Custom alert type,AlertItem.type
+AlertSeverity,components.schemas.AlertItem.severity,info,Informational alert,AlertItem.severity
+AlertSeverity,components.schemas.AlertItem.severity,warn,Warning alert,AlertItem.severity
+AlertSeverity,components.schemas.AlertItem.severity,critical,Critical alert,AlertItem.severity
+SiloType,components.schemas.SiloStatus.siloType,cement,Cement silo type only,SiloStatus.siloType|SiloRealtimeReading.siloType
