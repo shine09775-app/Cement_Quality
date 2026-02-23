@@ -1,0 +1,1413 @@
+openapi: 3.0.3
+info:
+  title: CPAC Silo Monitoring and Quality API
+  version: 1.0.0
+  description: |
+    API specification for CPAC cement plant and CPAC branch silo monitoring,
+    dispatch traceability, and cement quality tracking.
+servers:
+  - url: https://api.cpac.example.com/v1
+    description: Production
+  - url: https://sandbox-api.cpac.example.com/v1
+    description: Sandbox
+tags:
+  - name: Plants
+    description: Cement plant and CPAC branch metadata and dashboard views.
+  - name: Silos
+    description: Silo status and lot/source traceability.
+  - name: Quality
+    description: Dispatch note quality traceability and lab metrics.
+  - name: Map
+    description: National map marker data.
+  - name: Ingestion
+    description: Real-time ingest endpoints from cement plant source systems.
+paths:
+  /plants:
+    get:
+      tags: [Plants]
+      summary: List cement plants
+      operationId: listCementPlants
+      responses:
+        '200':
+          description: Cement plants
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CementPlant'
+              examples:
+                default:
+                  value:
+                    data:
+                      - plantCode: STL
+                        plantName: Tha Luang
+                        province: Saraburi
+                        online: true
+                        hasWarning: false
+                        updatedAt: '2026-02-23T07:32:00Z'
+                        coordinates:
+                          lat: 14.6401
+                          lng: 100.9126
+                      - plantCode: SKK
+                        plantName: Kaeng Khoi
+                        province: Saraburi
+                        online: true
+                        hasWarning: true
+                        updatedAt: '2026-02-23T07:32:00Z'
+                        coordinates:
+                          lat: 14.5861
+                          lng: 100.9972
+  /plants/{plantCode}/dashboard:
+    get:
+      tags: [Plants, Silos]
+      summary: Get cement plant dashboard snapshot
+      operationId: getPlantDashboard
+      parameters:
+        - $ref: '#/components/parameters/PlantCodePath'
+      responses:
+        '200':
+          description: Dashboard payload for one cement plant
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlantDashboardResponse'
+              examples:
+                default:
+                  value:
+                    plant:
+                      plantCode: STL
+                      plantName: Tha Luang
+                      province: Saraburi
+                      online: true
+                      hasWarning: false
+                      updatedAt: '2026-02-23T07:32:00Z'
+                      coordinates:
+                        lat: 14.6401
+                        lng: 100.9126
+                    headerStats:
+                      totalStockTon: 42850
+                      utilizationPct: 67.4
+                      totalSilos: 10
+                    summary:
+                      normalSiloCount: 6
+                      lowSiloCount: 2
+                      criticalSiloCount: 1
+                      dispatchCountToday: 28
+                      currentLotNo: LOT-47
+                      currentLotStatus: pass
+                      currentLotSourcePlant: STL
+                    alerts:
+                      - type: inventory_low
+                        severity: warn
+                        message: SILO 3 below min level
+                      - type: quality_trend
+                        severity: warn
+                        message: SILO 7 strength drop for 3 consecutive DN
+                    silos:
+                      - siloId: stl-silo-1
+                        siloName: SILO 1
+                        brand: SCG SHC (Hybrid Cement)
+                        siloType: cement
+                        capacityTon: 8000
+                        currentVolumeTon: 5392
+                        minTon: 800
+                        maxTon: 7680
+                        lotNo: LOT-47
+                        qualityStatus: ok
+                        noData: false
+                        lastQualityTestAt: '2026-02-23T07:32:00Z'
+  /cpac-plants:
+    get:
+      tags: [Plants]
+      summary: List CPAC branch plants
+      operationId: listCpacPlants
+      responses:
+        '200':
+          description: CPAC branches
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CpacPlant'
+              examples:
+                default:
+                  value:
+                    data:
+                      - cpacPlantId: BNA-TRD
+                        cpacPlantName: Bangna-Trad
+                        province: Bangkok
+                        online: true
+                        updatedAt: '2026-02-23T07:32:00Z'
+                      - cpacPlantId: RCHD
+                        cpacPlantName: Ratchada
+                        province: Bangkok
+                        online: true
+                        updatedAt: '2026-02-23T07:32:00Z'
+  /cpac-plants/{cpacPlantId}/dashboard:
+    get:
+      tags: [Plants, Silos]
+      summary: Get CPAC branch dashboard snapshot
+      operationId: getCpacPlantDashboard
+      parameters:
+        - $ref: '#/components/parameters/CpacPlantIdPath'
+      responses:
+        '200':
+          description: Dashboard payload for one CPAC branch
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CpacDashboardResponse'
+              examples:
+                default:
+                  value:
+                    cpacPlant:
+                      cpacPlantId: BNA-TRD
+                      cpacPlantName: Bangna-Trad
+                      province: Bangkok
+                      online: true
+                      updatedAt: '2026-02-23T07:32:00Z'
+                    headerStats:
+                      totalStockTon: 342
+                      sourcePlants:
+                        - STL
+                        - SKK
+                      totalSilos: 4
+                    sourceBlend:
+                      lotNo: LOT-47
+                      description: Blend estimate by source plant
+                      ratios:
+                        - plantCode: STL
+                          ratioPct: 60
+                        - plantCode: SKK
+                          ratioPct: 40
+                    silos:
+                      - siloId: bna-trd-c1
+                        siloName: SILO C1
+                        brand: SHC
+                        siloType: cement
+                        capacityTon: 180
+                        currentVolumeTon: 124
+                        minTon: 20
+                        maxTon: 170
+                        lotNo: LOT-47
+                        qualityStatus: ok
+                        noData: false
+                        sourcePlants:
+                          - STL
+  /cpac-plants/{cpacPlantId}/silos:
+    get:
+      tags: [Silos]
+      summary: List silo statuses in a CPAC branch
+      operationId: listCpacSilos
+      parameters:
+        - $ref: '#/components/parameters/CpacPlantIdPath'
+        - $ref: '#/components/parameters/SiloQualityStatusQuery'
+      responses:
+        '200':
+          description: CPAC silos
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SiloStatus'
+  /quality/spec-limits:
+    get:
+      tags: [Quality]
+      summary: Get cement quality parameter specification limits
+      operationId: getQualitySpecLimits
+      responses:
+        '200':
+          description: Spec limits by parameter key
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    type: object
+                    additionalProperties:
+                      $ref: '#/components/schemas/SpecLimit'
+              examples:
+                default:
+                  value:
+                    data:
+                      SiO2:
+                        min: 19.0
+                        max: 22.0
+                        unit: '%'
+                      Blaine:
+                        min: 3200
+                        max: 3600
+                        unit: cm2/g
+                      STR28D:
+                        min: 42.0
+                        max: null
+                        unit: MPa
+  /quality/dn-records:
+    get:
+      tags: [Quality]
+      summary: Search dispatch quality traceability records
+      operationId: listDnQualityRecords
+      parameters:
+        - $ref: '#/components/parameters/PlantCodeQuery'
+        - $ref: '#/components/parameters/LotNoQuery'
+        - $ref: '#/components/parameters/SiloNameQuery'
+        - $ref: '#/components/parameters/DnNoQuery'
+        - $ref: '#/components/parameters/StatusQuery'
+        - $ref: '#/components/parameters/FromDateTimeQuery'
+        - $ref: '#/components/parameters/ToDateTimeQuery'
+        - $ref: '#/components/parameters/PageQuery'
+        - $ref: '#/components/parameters/PageSizeQuery'
+      responses:
+        '200':
+          description: DN quality records with pagination
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DnQualityRecordListResponse'
+              examples:
+                default:
+                  value:
+                    data:
+                      - dnNo: DN-250220-001
+                        plantCode: STL
+                        siloName: SILO-1
+                        lotNo: LOT-47
+                        shipTo: CPAC Bangna-Trad
+                        bayOutAt: '2026-02-20T01:14:00Z'
+                        dispatchQtyTon: 28.5
+                        dispatchSiloLevelPct: 67.4
+                        dispatchSiloTon: 5392
+                        status: pass
+                        quality:
+                          SiO2: 20.42
+                          Al2O3: 5.18
+                          Fe2O3: 3.21
+                          CaO: 64.85
+                          MgO: 1.92
+                          SO3: 2.41
+                          K2O: 0.52
+                          Na2O: 0.18
+                          Alkalies: 0.52
+                          LOI: 1.82
+                          Insoluble: 0.62
+                          C3S: 58.4
+                          C2S: 16.2
+                          C3A: 8.7
+                          C4AF: 9.8
+                          Blaine: 3420
+                          Autoclave: 0.12
+                          VicatInitial: 142
+                          VicatFinal: 185
+                          Aircontent: 7.2
+                          STR1D: 14.8
+                          STR3D: 29.6
+                          STR7D: 36.2
+                          STR28D: 42.1
+                    page: 1
+                    pageSize: 20
+                    total: 1
+                    totalPages: 1
+  /quality/dn-records/{dnNo}:
+    get:
+      tags: [Quality]
+      summary: Get DN quality record detail
+      operationId: getDnQualityRecord
+      parameters:
+        - $ref: '#/components/parameters/DnNoPath'
+      responses:
+        '200':
+          description: DN quality detail
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DnQualityRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /quality/dn-records/{dnNo}/status:
+    patch:
+      tags: [Quality]
+      summary: Update DN-level quality status
+      operationId: patchDnQualityStatus
+      parameters:
+        - $ref: '#/components/parameters/DnNoPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  $ref: '#/components/schemas/DnStatus'
+                reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Updated DN status
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/DnQualityRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /ingest/plants/{plantCode}/heartbeat:
+    post:
+      tags: [Ingestion]
+      summary: Ingest plant heartbeat and header stats in real time
+      operationId: ingestPlantHeartbeat
+      parameters:
+        - $ref: '#/components/parameters/PlantCodePath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlantHeartbeatIngestRequest'
+            examples:
+              default:
+                value:
+                  metadata:
+                    messageId: efd0d370-e826-4c76-b9e5-4c157f9d2f50
+                    sourceSystem: STL-SCADA-GW01
+                    observedAt: '2026-02-23T07:32:00Z'
+                    sentAt: '2026-02-23T07:32:02Z'
+                    schemaVersion: '1.0'
+                  payload:
+                    online: true
+                    headerStats:
+                      totalStockTon: 42850
+                      utilizationPct: 67.4
+                      totalSilos: 10
+      responses:
+        '202':
+          description: Heartbeat accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestUpsertAck'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /ingest/plants/{plantCode}/silo-readings:
+    post:
+      tags: [Ingestion]
+      summary: Ingest real-time silo telemetry in batch
+      operationId: ingestSiloReadings
+      parameters:
+        - $ref: '#/components/parameters/PlantCodePath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiloReadingsIngestRequest'
+      responses:
+        '202':
+          description: Batch accepted (full or partial)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestBatchAck'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /ingest/plants/{plantCode}/silos/{siloId}/state:
+    put:
+      tags: [Ingestion]
+      summary: Upsert latest state for one silo
+      operationId: upsertSiloState
+      parameters:
+        - $ref: '#/components/parameters/PlantCodePath'
+        - $ref: '#/components/parameters/SiloIdPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiloStateUpsertRequest'
+            examples:
+              default:
+                value:
+                  metadata:
+                    messageId: 5b3672da-e4fe-4f0d-8b29-5a9f0c5af005
+                    sourceSystem: STL-SCADA-GW01
+                    observedAt: '2026-02-23T07:35:00Z'
+                    schemaVersion: '1.0'
+                  reading:
+                    recordedAt: '2026-02-23T07:34:58Z'
+                    siloId: stl-silo-1
+                    siloName: SILO 1
+                    brand: SCG SHC (Hybrid Cement)
+                    siloType: cement
+                    capacityTon: 8000
+                    currentVolumeTon: 5392
+                    minTon: 800
+                    maxTon: 7680
+                    lotNo: LOT-47
+                    qualityStatus: ok
+                    noData: false
+                    lastQualityTestAt: '2026-02-23T07:10:00Z'
+      responses:
+        '200':
+          description: Upsert result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestUpsertAck'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /ingest/plants/{plantCode}/quality/dn-records:
+    post:
+      tags: [Ingestion]
+      summary: Ingest new DN quality traceability record
+      operationId: ingestDnQualityRecord
+      parameters:
+        - $ref: '#/components/parameters/PlantCodePath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DnQualityIngestCreateRequest'
+      responses:
+        '201':
+          description: DN quality record created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestUpsertAck'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /ingest/plants/{plantCode}/quality/dn-records/{dnNo}:
+    put:
+      tags: [Ingestion]
+      summary: Upsert DN quality traceability record
+      operationId: upsertDnQualityRecord
+      parameters:
+        - $ref: '#/components/parameters/PlantCodePath'
+        - $ref: '#/components/parameters/DnNoPath'
+        - $ref: '#/components/parameters/IdempotencyKeyHeader'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DnQualityIngestUpsertRequest'
+      responses:
+        '200':
+          description: DN quality record upserted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IngestUpsertAck'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /map/national:
+    get:
+      tags: [Map]
+      summary: Get map marker data for national map view
+      operationId: getNationalMapData
+      responses:
+        '200':
+          description: National marker groups
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data]
+                properties:
+                  data:
+                    $ref: '#/components/schemas/NationalMapData'
+components:
+  parameters:
+    PlantCodePath:
+      name: plantCode
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/PlantCode'
+    CpacPlantIdPath:
+      name: cpacPlantId
+      in: path
+      required: true
+      schema:
+        type: string
+    DnNoPath:
+      name: dnNo
+      in: path
+      required: true
+      schema:
+        type: string
+    SiloIdPath:
+      name: siloId
+      in: path
+      required: true
+      schema:
+        type: string
+    IdempotencyKeyHeader:
+      name: Idempotency-Key
+      in: header
+      required: false
+      description: Client-generated key to safely retry ingest without duplicates.
+      schema:
+        type: string
+        maxLength: 128
+    PlantCodeQuery:
+      name: plantCode
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/PlantCode'
+    LotNoQuery:
+      name: lotNo
+      in: query
+      required: false
+      schema:
+        type: string
+    SiloNameQuery:
+      name: siloName
+      in: query
+      required: false
+      schema:
+        type: string
+    DnNoQuery:
+      name: dnNo
+      in: query
+      required: false
+      schema:
+        type: string
+    StatusQuery:
+      name: status
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/DnStatus'
+    SiloQualityStatusQuery:
+      name: qualityStatus
+      in: query
+      required: false
+      schema:
+        $ref: '#/components/schemas/SiloQualityStatus'
+    FromDateTimeQuery:
+      name: from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    ToDateTimeQuery:
+      name: to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date-time
+    PageQuery:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSizeQuery:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 20
+  responses:
+    BadRequest:
+      description: Invalid request payload or parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                error:
+                  code: BAD_REQUEST
+                  message: Request validation failed
+    Conflict:
+      description: Duplicate event or data conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            duplicateEvent:
+              value:
+                error:
+                  code: DUPLICATE_EVENT
+                  message: messageId or Idempotency-Key already processed
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          examples:
+            default:
+              value:
+                error:
+                  code: NOT_FOUND
+                  message: Resource was not found
+  schemas:
+    PlantCode:
+      type: string
+      enum: [SLP, STL, SKW, SKK, STS]
+    DnStatus:
+      type: string
+      enum: [pass, warn, fail]
+    SiloQualityStatus:
+      type: string
+      enum: [ok, warn, fail, na]
+    IngestAckStatus:
+      type: string
+      enum: [accepted, partial, rejected]
+    UpsertAction:
+      type: string
+      enum: [created, updated, ignored]
+    LatLng:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+        lng:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+    CementPlant:
+      type: object
+      required:
+        - plantCode
+        - plantName
+        - province
+        - online
+        - hasWarning
+        - updatedAt
+        - coordinates
+      properties:
+        plantCode:
+          $ref: '#/components/schemas/PlantCode'
+        plantName:
+          type: string
+        province:
+          type: string
+        online:
+          type: boolean
+        hasWarning:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+        coordinates:
+          $ref: '#/components/schemas/LatLng'
+    CpacPlant:
+      type: object
+      required: [cpacPlantId, cpacPlantName, province, online, updatedAt]
+      properties:
+        cpacPlantId:
+          type: string
+        cpacPlantName:
+          type: string
+        province:
+          type: string
+        online:
+          type: boolean
+        updatedAt:
+          type: string
+          format: date-time
+    PlantHeaderStats:
+      type: object
+      required: [totalStockTon, utilizationPct, totalSilos]
+      properties:
+        totalStockTon:
+          type: number
+          format: double
+        utilizationPct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        totalSilos:
+          type: integer
+          minimum: 0
+    PlantSummary:
+      type: object
+      required:
+        - normalSiloCount
+        - lowSiloCount
+        - criticalSiloCount
+        - dispatchCountToday
+        - currentLotNo
+        - currentLotStatus
+      properties:
+        normalSiloCount:
+          type: integer
+          minimum: 0
+        lowSiloCount:
+          type: integer
+          minimum: 0
+        criticalSiloCount:
+          type: integer
+          minimum: 0
+        dispatchCountToday:
+          type: integer
+          minimum: 0
+        currentLotNo:
+          type: string
+        currentLotStatus:
+          $ref: '#/components/schemas/DnStatus'
+        currentLotSourcePlant:
+          $ref: '#/components/schemas/PlantCode'
+    AlertItem:
+      type: object
+      required: [type, severity, message]
+      properties:
+        type:
+          type: string
+          enum: [inventory_low, quality_trend, no_data, custom]
+        severity:
+          type: string
+          enum: [info, warn, critical]
+        message:
+          type: string
+    SiloStatus:
+      type: object
+      required:
+        - siloId
+        - siloName
+        - brand
+        - siloType
+        - capacityTon
+        - currentVolumeTon
+        - minTon
+        - maxTon
+        - lotNo
+        - qualityStatus
+        - noData
+      properties:
+        siloId:
+          type: string
+        siloName:
+          type: string
+        brand:
+          type: string
+        siloType:
+          type: string
+          enum: [cement]
+        capacityTon:
+          type: number
+          format: double
+          minimum: 0
+        currentVolumeTon:
+          type: number
+          format: double
+          minimum: 0
+        minTon:
+          type: number
+          format: double
+          minimum: 0
+        maxTon:
+          type: number
+          format: double
+          minimum: 0
+        lotNo:
+          type: string
+          nullable: true
+        qualityStatus:
+          $ref: '#/components/schemas/SiloQualityStatus'
+        noData:
+          type: boolean
+          default: false
+        lastQualityTestAt:
+          type: string
+          format: date-time
+          nullable: true
+        sourcePlants:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlantCode'
+    BlendRatio:
+      type: object
+      required: [plantCode, ratioPct]
+      properties:
+        plantCode:
+          $ref: '#/components/schemas/PlantCode'
+        ratioPct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+    SourceBlend:
+      type: object
+      required: [lotNo, description, ratios]
+      properties:
+        lotNo:
+          type: string
+        description:
+          type: string
+        ratios:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlendRatio'
+    CpacHeaderStats:
+      type: object
+      required: [totalStockTon, sourcePlants, totalSilos]
+      properties:
+        totalStockTon:
+          type: number
+          format: double
+        sourcePlants:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlantCode'
+        totalSilos:
+          type: integer
+          minimum: 0
+    PlantDashboardResponse:
+      type: object
+      required: [plant, headerStats, summary, alerts, silos]
+      properties:
+        plant:
+          $ref: '#/components/schemas/CementPlant'
+        headerStats:
+          $ref: '#/components/schemas/PlantHeaderStats'
+        summary:
+          $ref: '#/components/schemas/PlantSummary'
+        alerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/AlertItem'
+        silos:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiloStatus'
+    CpacDashboardResponse:
+      type: object
+      required: [cpacPlant, headerStats, sourceBlend, silos]
+      properties:
+        cpacPlant:
+          $ref: '#/components/schemas/CpacPlant'
+        headerStats:
+          $ref: '#/components/schemas/CpacHeaderStats'
+        sourceBlend:
+          $ref: '#/components/schemas/SourceBlend'
+        silos:
+          type: array
+          items:
+            $ref: '#/components/schemas/SiloStatus'
+    SpecLimit:
+      type: object
+      required: [unit]
+      properties:
+        min:
+          type: number
+          nullable: true
+        max:
+          type: number
+          nullable: true
+        unit:
+          type: string
+    QualityMetrics:
+      type: object
+      required:
+        - SiO2
+        - Al2O3
+        - Fe2O3
+        - CaO
+        - MgO
+        - SO3
+        - K2O
+        - Na2O
+        - Alkalies
+        - LOI
+        - Insoluble
+        - C3S
+        - C2S
+        - C3A
+        - C4AF
+        - Blaine
+        - Autoclave
+        - VicatInitial
+        - VicatFinal
+        - Aircontent
+        - STR1D
+        - STR3D
+        - STR7D
+        - STR28D
+      properties:
+        SiO2: { type: number, format: double }
+        Al2O3: { type: number, format: double }
+        Fe2O3: { type: number, format: double }
+        CaO: { type: number, format: double }
+        MgO: { type: number, format: double }
+        SO3: { type: number, format: double }
+        K2O: { type: number, format: double }
+        Na2O: { type: number, format: double }
+        Alkalies: { type: number, format: double }
+        LOI: { type: number, format: double }
+        Insoluble: { type: number, format: double }
+        C3S: { type: number, format: double }
+        C2S: { type: number, format: double }
+        C3A: { type: number, format: double }
+        C4AF: { type: number, format: double }
+        Blaine: { type: number, format: double }
+        Autoclave: { type: number, format: double }
+        VicatInitial: { type: number, format: double }
+        VicatFinal: { type: number, format: double }
+        Aircontent: { type: number, format: double }
+        STR1D: { type: number, format: double }
+        STR3D: { type: number, format: double }
+        STR7D: { type: number, format: double }
+        STR28D: { type: number, format: double }
+    DnQualityRecord:
+      type: object
+      required:
+        - dnNo
+        - plantCode
+        - siloName
+        - lotNo
+        - shipTo
+        - bayOutAt
+        - dispatchSiloLevelPct
+        - dispatchSiloTon
+        - status
+        - quality
+      properties:
+        dnNo:
+          type: string
+        plantCode:
+          $ref: '#/components/schemas/PlantCode'
+        siloName:
+          type: string
+        lotNo:
+          type: string
+        shipTo:
+          type: string
+        bayOutAt:
+          type: string
+          format: date-time
+        dispatchQtyTon:
+          type: number
+          format: double
+          nullable: true
+        dispatchSiloLevelPct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        dispatchSiloTon:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/DnStatus'
+        quality:
+          $ref: '#/components/schemas/QualityMetrics'
+    DnQualityRecordListResponse:
+      type: object
+      required: [data, page, pageSize, total, totalPages]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DnQualityRecord'
+        page:
+          type: integer
+          minimum: 1
+        pageSize:
+          type: integer
+          minimum: 1
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+    CementPlantMarker:
+      type: object
+      required: [plantCode, plantName, province, lat, lng, hasWarning]
+      properties:
+        plantCode:
+          $ref: '#/components/schemas/PlantCode'
+        plantName:
+          type: string
+        province:
+          type: string
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        hasWarning:
+          type: boolean
+    CpacPoint:
+      type: object
+      required: [lat, lng]
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+    QualityAlertMarker:
+      type: object
+      required: [lat, lng, label]
+      properties:
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        label:
+          type: string
+    NationalMapData:
+      type: object
+      required: [cementPlants, cpacPoints, qualityAlerts]
+      properties:
+        cementPlants:
+          type: array
+          items:
+            $ref: '#/components/schemas/CementPlantMarker'
+        cpacPoints:
+          type: array
+          items:
+            $ref: '#/components/schemas/CpacPoint'
+        qualityAlerts:
+          type: array
+          items:
+            $ref: '#/components/schemas/QualityAlertMarker'
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message]
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+    IngestMetadata:
+      type: object
+      required: [messageId, sourceSystem, observedAt]
+      properties:
+        messageId:
+          type: string
+          description: Unique message identifier from producer system.
+          example: efd0d370-e826-4c76-b9e5-4c157f9d2f50
+        sourceSystem:
+          type: string
+          example: STL-SCADA-GW01
+        observedAt:
+          type: string
+          format: date-time
+          description: Event timestamp at source.
+        sentAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Optional producer send timestamp.
+        schemaVersion:
+          type: string
+          default: '1.0'
+    PlantHeartbeatPayload:
+      type: object
+      required: [online, headerStats]
+      properties:
+        online:
+          type: boolean
+        headerStats:
+          $ref: '#/components/schemas/PlantHeaderStats'
+    PlantHeartbeatIngestRequest:
+      type: object
+      required: [metadata, payload]
+      properties:
+        metadata:
+          $ref: '#/components/schemas/IngestMetadata'
+        payload:
+          $ref: '#/components/schemas/PlantHeartbeatPayload'
+    SiloRealtimeReading:
+      type: object
+      required:
+        - recordedAt
+        - siloId
+        - siloName
+        - brand
+        - siloType
+        - capacityTon
+        - currentVolumeTon
+        - minTon
+        - maxTon
+        - lotNo
+        - qualityStatus
+        - noData
+      properties:
+        recordedAt:
+          type: string
+          format: date-time
+        siloId:
+          type: string
+        siloName:
+          type: string
+        brand:
+          type: string
+        siloType:
+          type: string
+          enum: [cement]
+        capacityTon:
+          type: number
+          format: double
+          minimum: 0
+        currentVolumeTon:
+          type: number
+          format: double
+          minimum: 0
+        minTon:
+          type: number
+          format: double
+          minimum: 0
+        maxTon:
+          type: number
+          format: double
+          minimum: 0
+        lotNo:
+          type: string
+          nullable: true
+        qualityStatus:
+          $ref: '#/components/schemas/SiloQualityStatus'
+        noData:
+          type: boolean
+        lastQualityTestAt:
+          type: string
+          format: date-time
+          nullable: true
+        sourcePlants:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlantCode'
+    SiloReadingsIngestRequest:
+      type: object
+      required: [metadata, readings]
+      properties:
+        metadata:
+          $ref: '#/components/schemas/IngestMetadata'
+        validateOnly:
+          type: boolean
+          default: false
+        readings:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SiloRealtimeReading'
+    SiloStateUpsertRequest:
+      type: object
+      required: [metadata, reading]
+      properties:
+        metadata:
+          $ref: '#/components/schemas/IngestMetadata'
+        reading:
+          $ref: '#/components/schemas/SiloRealtimeReading'
+    DnQualityRecordIngestData:
+      type: object
+      required:
+        - dnNo
+        - siloName
+        - lotNo
+        - shipTo
+        - bayOutAt
+        - dispatchSiloLevelPct
+        - dispatchSiloTon
+        - status
+        - quality
+      properties:
+        dnNo:
+          type: string
+        siloName:
+          type: string
+        lotNo:
+          type: string
+        shipTo:
+          type: string
+        bayOutAt:
+          type: string
+          format: date-time
+        dispatchQtyTon:
+          type: number
+          format: double
+          nullable: true
+        dispatchSiloLevelPct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        dispatchSiloTon:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/DnStatus'
+        quality:
+          $ref: '#/components/schemas/QualityMetrics'
+    DnQualityRecordIngestUpsertData:
+      type: object
+      required:
+        - siloName
+        - lotNo
+        - shipTo
+        - bayOutAt
+        - dispatchSiloLevelPct
+        - dispatchSiloTon
+        - status
+        - quality
+      properties:
+        siloName:
+          type: string
+        lotNo:
+          type: string
+        shipTo:
+          type: string
+        bayOutAt:
+          type: string
+          format: date-time
+        dispatchQtyTon:
+          type: number
+          format: double
+          nullable: true
+        dispatchSiloLevelPct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+        dispatchSiloTon:
+          type: number
+          format: double
+          minimum: 0
+        status:
+          $ref: '#/components/schemas/DnStatus'
+        quality:
+          $ref: '#/components/schemas/QualityMetrics'
+    DnQualityIngestCreateRequest:
+      type: object
+      required: [metadata, record]
+      properties:
+        metadata:
+          $ref: '#/components/schemas/IngestMetadata'
+        record:
+          $ref: '#/components/schemas/DnQualityRecordIngestData'
+    DnQualityIngestUpsertRequest:
+      type: object
+      required: [metadata, record]
+      properties:
+        metadata:
+          $ref: '#/components/schemas/IngestMetadata'
+        record:
+          $ref: '#/components/schemas/DnQualityRecordIngestUpsertData'
+    IngestErrorItem:
+      type: object
+      required: [code, message]
+      properties:
+        index:
+          type: integer
+          minimum: 0
+          description: Index of the failed record in batch payload (if applicable).
+        field:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+    IngestBatchAck:
+      type: object
+      required: [ackId, status, receivedAt, acceptedCount, rejectedCount]
+      properties:
+        ackId:
+          type: string
+        status:
+          $ref: '#/components/schemas/IngestAckStatus'
+        receivedAt:
+          type: string
+          format: date-time
+        acceptedCount:
+          type: integer
+          minimum: 0
+        rejectedCount:
+          type: integer
+          minimum: 0
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/IngestErrorItem'
+    IngestUpsertAck:
+      type: object
+      required: [ackId, status, receivedAt, upsertAction, resourceId]
+      properties:
+        ackId:
+          type: string
+        status:
+          $ref: '#/components/schemas/IngestAckStatus'
+        receivedAt:
+          type: string
+          format: date-time
+        upsertAction:
+          $ref: '#/components/schemas/UpsertAction'
+        resourceId:
+          type: string
+        warnings:
+          type: array
+          items:
+            type: string
