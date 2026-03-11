@@ -258,6 +258,9 @@
   .silo-card.border-yellow { border-top: 3px solid var(--status-yellow); }
   .silo-card.border-red { border-top: 3px solid var(--status-red); }
   .silo-card.border-gray { border-top: 3px solid var(--status-gray); }
+  #cpac-silos .silo-card {
+    width: 190px;
+  }
 
   /* Card Top Info */
   .card-top {
@@ -305,11 +308,24 @@
     bottom: 0; left: 0; right: 0;
     transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 0 0 2px 2px;
+    z-index: 0;
   }
   .tank-fill.green { background: linear-gradient(180deg, #66BB6A 0%, #43A047 100%); }
   .tank-fill.yellow { background: linear-gradient(180deg, #FFD54F 0%, #FFB300 100%); }
   .tank-fill.red { background: linear-gradient(180deg, #EF5350 0%, #C62828 100%); }
   .tank-fill.gray { background: linear-gradient(180deg, #BDBDBD 0%, #9E9E9E 100%); }
+  .tank-slot-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .tank-slot-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    border-top: 1px dashed rgba(124, 138, 163, 0.6);
+  }
 
   /* dotted lines */
   .tank-line {
@@ -393,6 +409,80 @@
   }
   .btn-order:hover { background: var(--green-bg); border-color: var(--status-green); color: var(--green); }
   .btn-no-order:hover { background: var(--gray-100); }
+  .cpac-delivery-box {
+    border: 1px solid var(--border);
+    background: var(--gray-50);
+    border-radius: 6px;
+    padding: 7px 8px;
+  }
+  .cpac-delivery-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .cpac-delivery-title {
+    font-size: 9px;
+    color: var(--gray-500);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.35px;
+  }
+  .cpac-delivery-total {
+    font-size: 10px;
+    color: var(--gray-800);
+    font-weight: 700;
+    font-family: var(--mono);
+    white-space: nowrap;
+  }
+  .cpac-delivery-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .cpac-delivery-row {
+    display: grid;
+    grid-template-columns: 42px 40px 1fr;
+    gap: 6px;
+    align-items: start;
+    background: white;
+    border: 1px solid var(--gray-100);
+    border-radius: 4px;
+    padding: 4px 6px;
+  }
+  .cpac-delivery-dn,
+  .cpac-delivery-tons {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gray-900);
+    white-space: nowrap;
+  }
+  .cpac-delivery-eta {
+    font-size: 8.5px;
+    color: var(--gray-600);
+    line-height: 1.3;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+  .cpac-delivery-date {
+    display: block;
+    font-weight: 700;
+    color: var(--gray-700);
+  }
+  .cpac-delivery-slot {
+    display: block;
+    color: #3567D8;
+    font-weight: 700;
+  }
+  .cpac-delivery-empty {
+    font-size: 9px;
+    color: var(--gray-500);
+    text-align: center;
+    padding: 6px 0 2px;
+  }
 
   /* Quality test info (Cement Plant cards only) */
   .quality-test-info {
@@ -630,6 +720,443 @@
   .qp-val.warn { color: var(--status-yellow); }
   .qp-val.fail { color: var(--status-red); }
 
+  /* CPAC DN location */
+  .cpac-location-wrap {
+    display: grid;
+    grid-template-columns: minmax(280px, 360px) 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .cpac-location-card,
+  .cpac-dn-list-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .cpac-location-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .cpac-location-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 4px;
+  }
+  .cpac-location-meta {
+    font-size: 12px;
+    color: var(--gray-600);
+    line-height: 1.6;
+  }
+  .cpac-summary-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+  }
+  .cpac-summary-chip {
+    background: var(--gray-50);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 9px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--gray-700);
+    white-space: nowrap;
+  }
+  .cpac-visual-card {
+    background: linear-gradient(180deg, #FAFBFC 0%, #F3F6F8 100%);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 14px 12px;
+  }
+  .cpac-visual-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .cpac-visual-stat-label {
+    font-size: 11px;
+    color: var(--gray-500);
+    margin-bottom: 2px;
+  }
+  .cpac-visual-stat-value {
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 800;
+    font-family: var(--mono);
+    color: var(--gray-900);
+  }
+  .cpac-visual-stat-value.ok { color: var(--status-green); }
+  .cpac-visual-stat-value.warn { color: #F9A825; }
+  .cpac-visual-stat-value.fail { color: var(--status-red); }
+  .cpac-visual-sub {
+    font-size: 11px;
+    color: var(--gray-600);
+    text-align: right;
+    line-height: 1.5;
+  }
+  .cpac-silo-map {
+    position: relative;
+    height: 340px;
+    display: grid;
+    grid-template-columns: 52px 136px;
+    gap: 12px;
+    align-items: end;
+    justify-content: center;
+  }
+  .cpac-scale-col {
+    position: relative;
+    height: 100%;
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+  .cpac-scale-tag {
+    position: absolute;
+    left: 0;
+    transform: translateY(50%);
+    font-weight: 700;
+  }
+  .cpac-scale-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-weight: 700;
+    color: var(--gray-700);
+  }
+  .cpac-scale-current {
+    position: absolute;
+    top: 22px;
+    left: 0;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .cpac-shell-col {
+    position: relative;
+    height: 100%;
+  }
+  .cpac-silo-shell {
+    position: absolute;
+    inset: 28px 0 18px 0;
+    border: 2px solid #C9CED6;
+    border-radius: 18px 18px 8px 8px;
+    background: linear-gradient(180deg, #F7F8FA 0%, #EEF2F5 100%);
+    overflow: hidden;
+  }
+  .cpac-silo-cap {
+    position: absolute;
+    inset: 0;
+  }
+  .cpac-slot-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .cpac-slot-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-top: 1px dashed rgba(111, 131, 167, 0.75);
+  }
+  .cpac-max-line,
+  .cpac-min-line,
+  .cpac-current-line {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-top: 2px dashed;
+    z-index: 3;
+  }
+  .cpac-max-line { border-color: rgba(95, 99, 104, 0.7); }
+  .cpac-min-line { border-color: rgba(245, 158, 11, 0.85); }
+  .cpac-current-line { border-color: rgba(3, 105, 161, 0.8); }
+  .cpac-fill-bg {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(35, 177, 84, 0.78) 0%, rgba(35, 177, 84, 0.95) 100%);
+    z-index: 1;
+  }
+  .cpac-fill-bg.warn {
+    background: linear-gradient(180deg, rgba(251, 191, 36, 0.82) 0%, rgba(251, 191, 36, 0.98) 100%);
+  }
+  .cpac-fill-bg.fail {
+    background: linear-gradient(180deg, rgba(239, 68, 68, 0.82) 0%, rgba(220, 38, 38, 0.98) 100%);
+  }
+  .cpac-dn-zone {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    border-top: 2px dashed rgba(38, 52, 75, 0.65);
+    border-bottom: 2px dashed rgba(38, 52, 75, 0.65);
+    background: rgba(255,255,255,0.14);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 6px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .cpac-dn-zone.warn { background: rgba(255,255,255,0.12); }
+  .cpac-dn-zone.fail { background: rgba(255,255,255,0.1); }
+  .cpac-dn-zone.compact {
+    padding: 2px 4px;
+  }
+  .cpac-dn-zone-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    color: #08351f;
+  }
+  .cpac-dn-zone.fail .cpac-dn-zone-inner {
+    color: #7F1D1D;
+  }
+  .cpac-dn-zone-id {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .cpac-dn-zone-meta {
+    font-size: 9px;
+    line-height: 1.1;
+    opacity: 0.84;
+    white-space: nowrap;
+  }
+  .cpac-dn-zone.compact .cpac-dn-zone-id {
+    font-size: 10px;
+  }
+  .cpac-dn-zone.compact .cpac-dn-zone-meta {
+    display: none;
+  }
+  .cpac-visual-foot {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+  .cpac-list-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-700);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .cpac-dn-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .cpac-dn-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--status-green);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--gray-50);
+  }
+  .cpac-dn-item.warn { border-left-color: #F9A825; }
+  .cpac-dn-item.fail { border-left-color: var(--status-red); }
+  .cpac-dn-code {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 3px;
+  }
+  .cpac-dn-desc {
+    font-size: 11px;
+    color: var(--gray-600);
+    line-height: 1.5;
+  }
+  .cpac-dn-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 7px;
+  }
+  .cpac-dn-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--gray-700);
+    white-space: nowrap;
+  }
+  .cpac-dn-chip.ok {
+    background: var(--green-bg);
+    color: var(--green);
+    border-color: rgba(35, 177, 84, 0.3);
+  }
+  .cpac-dn-chip.warn {
+    background: var(--yellow-bg);
+    color: #B26A00;
+    border-color: rgba(249, 168, 37, 0.35);
+  }
+  .cpac-dn-chip.fail {
+    background: #FDECEC;
+    color: var(--status-red);
+    border-color: rgba(214, 65, 65, 0.26);
+  }
+  .cpac-dn-metrics {
+    text-align: right;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gray-700);
+    line-height: 1.45;
+    white-space: nowrap;
+  }
+  .cpac-dn-empty {
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 18px 14px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--gray-500);
+    background: var(--gray-50);
+  }
+  .cpac-detail-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .cpac-detail-tab {
+    border: 1px solid #C7D6F8;
+    background: #F8FBFF;
+    color: #3567D8;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .cpac-detail-tab:hover {
+    background: #EEF4FF;
+  }
+  .cpac-detail-tab.active {
+    background: #E9F1FF;
+    border-color: #8FB1F7;
+    color: #214FB6;
+    box-shadow: inset 0 0 0 1px rgba(53, 103, 216, 0.08);
+  }
+  .cpac-detail-view {
+    display: none;
+  }
+  .cpac-detail-view.active {
+    display: block;
+  }
+  .cpac-usage-wrap {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .cpac-usage-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .cpac-usage-title {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--gray-900);
+    line-height: 1.2;
+  }
+  .cpac-usage-subtitle {
+    font-size: 12px;
+    color: #8092B5;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .cpac-usage-chip-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .cpac-usage-chip {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: white;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-700);
+  }
+  .cpac-usage-panel {
+    background: linear-gradient(180deg, #FCFDFF 0%, #F3F7FC 100%);
+    border: 1px solid #D9E4F5;
+    border-radius: 18px;
+    padding: 16px 18px 18px;
+  }
+  .cpac-usage-chart {
+    position: relative;
+    background: linear-gradient(180deg, #F9FBFF 0%, #F5F8FD 100%);
+    border-radius: 18px;
+    border: 1px solid #E2EAF6;
+    padding: 8px;
+    min-height: 420px;
+  }
+  .cpac-usage-svg {
+    width: 100%;
+    height: 420px;
+    display: block;
+  }
+  .cpac-usage-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .cpac-usage-card {
+    background: white;
+    border: 1px solid #E0E8F5;
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .cpac-usage-card-label {
+    font-size: 11px;
+    color: #7D8CAB;
+    margin-bottom: 4px;
+  }
+  .cpac-usage-card-value {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--gray-900);
+  }
+  .cpac-usage-card-note {
+    font-size: 10px;
+    color: var(--gray-500);
+    margin-top: 3px;
+  }
+
   /* Lot timeline */
   .lot-timeline { display: flex; flex-direction: column; gap: 8px; }
   .lot-row-t {
@@ -780,6 +1307,23 @@
       transform: scale(0.95);
       transform-origin: left bottom;
     }
+    .cpac-location-wrap {
+      grid-template-columns: 1fr;
+    }
+    .cpac-silo-map {
+      grid-template-columns: 42px 116px;
+      gap: 8px;
+      height: 320px;
+    }
+    .cpac-location-head {
+      flex-direction: column;
+    }
+    .cpac-summary-chip-row {
+      justify-content: flex-start;
+    }
+    .cpac-usage-summary {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   /* ── TOOLTIPS ── */
@@ -820,7 +1364,7 @@
       🏭 Cement Plants
     </div>
     <div class="nav-tab" onclick="switchTab(this, 'cpac-view')">
-      🏢 CPAC Plants (300+)
+      🏢 CPAC Plants
     </div>
     <div class="nav-tab" onclick="switchTab(this, 'map-view')">
       🗺️ National Map
@@ -1034,7 +1578,7 @@
         <span style="font-size:12px; color:var(--gray-500)">คลิกที่ไอคอนเพื่อดูรายละเอียด Silo</span>
         <div style="margin-left:auto; display:flex; gap:12px; font-size:12px;">
           <span>🔴 โรงงานซีเมนต์ (5)</span>
-          <span>⚫ CPAC Plants (300+)</span>
+          <span>⚫ CPAC Plants</span>
           <span>🟡 แจ้งเตือน</span>
         </div>
       </div>
@@ -1043,7 +1587,7 @@
         <div id="national-map" aria-label="Thailand map"></div>
         <div class="map-overlay-legend">
           <div class="map-legend-row"><span class="legend-dot cement"></span><span>&#xE42;&#xE23;&#xE07;&#xE07;&#xE32;&#xE19;&#xE0B;&#xE35;&#xE40;&#xE21;&#xE19;&#xE15;&#xE4C; (5)</span></div>
-          <div class="map-legend-row"><span class="legend-dot cpac"></span><span>CPAC Plants (300+)</span></div>
+          <div class="map-legend-row"><span class="legend-dot cpac"></span><span>CPAC Plants</span></div>
           <div class="map-legend-row"><span class="legend-dot alert"></span><span>&#xE41;&#xE08;&#xE49;&#xE07;&#xE40;&#xE15;&#xE37;&#xE2D;&#xE19; (Quality Alert)</span></div>
         </div>
       </div>
@@ -1131,8 +1675,55 @@
 
             <!-- Strength -->
             <div class="qd-group">
-              <div class="qd-group-title">💪 กำลังอัด (Compressive Strength)</div>
+              <div class="qd-group-title">💪 กำลังอัด Mortar  | Motar Compressive Strength (ksc)</div>
               <div class="qd-strength-bars" id="qd-strength"></div>
+            </div>
+
+            <!-- Cement Quality Testing Types -->
+            <div class="qd-group">
+              <div class="qd-group-title">📊 Cement Quality Testing: Daily vs Lot</div>
+              <div class="qd-comparison-table" id="qd-testing-comparison">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                  <thead>
+                    <tr style="background: var(--gray-100);">
+                      <th style="padding: 8px; border: 1px solid var(--border); text-align: left; font-weight: 600;">Testing Type</th>
+                      <th style="padding: 8px; border: 1px solid var(--border); text-align: left; font-weight: 600;">Frequency</th>
+                      <th style="padding: 8px; border: 1px solid var(--border); text-align: left; font-weight: 600;">Sample Size</th>
+                      <th style="padding: 8px; border: 1px solid var(--border); text-align: left; font-weight: 600;">Purpose</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding: 8px; border: 1px solid var(--border); font-weight: 500;">Cement Lot</td>
+                      <td style="padding: 8px; border: 1px solid var(--border);">ทุก 50,000 ตัน</td>
+                      <td style="padding: 8px; border: 1px solid var(--border);">ครบชุดทดสอบ</td>
+                      <td style="padding: 8px; border: 1px solid var(--border);">การตรวจสอบคุณภาพช่วงการผลิตปกติ</td>
+                    </tr>
+                    <tr style="background: var(--gray-50);">
+                      <td style="padding: 8px; border: 1px solid var(--border); font-weight: 500;">Cement Daily</td>
+                      <td style="padding: 8px; border: 1px solid var(--border);">ทุกวัน</td>
+                      <td style="padding: 8px; border: 1px solid var(--border);">น้อยกว่า Cement Lot</td>
+                      <td style="padding: 8px; border: 1px solid var(--border);">การตรวจสอบประจำวันเพื่อควบคุมคุณภาพ</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Quality Testing Notes -->
+            <div class="qd-group">
+              <div class="qd-group-title">📋 หมายเหตุการตรวจสอบคุณภาพปูนซิเมนต์</div>
+              <div class="qd-notes" style="padding: 14px; line-height: 1.5;">
+                <div style="margin-bottom: 12px;">
+                  <strong>🔍 Cement Lot:</strong> การทดสอบคุณภาพปูนซิเมนต์ทุก 50,000 ตัน เป็นการตรวจสอบแบบครบชุดในช่วงการผลิตปกติ
+                </div>
+                <div style="margin-bottom: 12px;">
+                  <strong>📅 Cement Daily:</strong> การทดสอบประจำวันที่มีขนาดตัวอย่างน้อยกว่า Cement Lot ใช้สำหรับควบคุมคุณภาพอย่างต่อเนื่อง
+                </div>
+                <div style="color: var(--gray-600); font-size: 11px; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 12px;">
+                  💡 <em>ค่าการทดสอบ Cement Daily จะน้อยกว่าค่า Cement Lot เนื่องจากเป็นการสุ่มตัวอย่างในปริมาณที่น้อยกว่า</em>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -1245,9 +1836,49 @@
           </div>
         </div>
 
+        <!-- Cement Daily Testing -->
+        <div class="modal-section">
+          <div class="modal-section-title">📅 Cement Daily Testing Results</div>
+          <div class="qp-grid">
+            <div class="qp-item">
+              <div class="qp-label">1d Strength (Daily)</div>
+              <div class="qp-val ok">17.8</div>
+              <div class="qp-target">Target ≥ 15 MPa</div>
+            </div>
+            <div class="qp-item">
+              <div class="qp-label">3d Strength (Daily)</div>
+              <div class="qp-val ok">31.5</div>
+              <div class="qp-target">Target ≥ 28 MPa</div>
+            </div>
+            <div class="qp-item">
+              <div class="qp-label">28d Strength (Daily)</div>
+              <div class="qp-val ok">41.2</div>
+              <div class="qp-target">Target ≥ 40 MPa</div>
+            </div>
+            <div class="qp-item">
+              <div class="qp-label">Initial Set (Daily)</div>
+              <div class="qp-val ok">138</div>
+              <div class="qp-target">Target 120–180 min</div>
+            </div>
+            <div class="qp-item">
+              <div class="qp-label">Final Set (Daily)</div>
+              <div class="qp-val ok">182</div>
+              <div class="qp-target">Target ≤ 240 min</div>
+            </div>
+            <div class="qp-item">
+              <div class="qp-label">Blaine (Daily)</div>
+              <div class="qp-val ok">3,150</div>
+              <div class="qp-target">Target 3,200–3,600</div>
+            </div>
+          </div>
+          <div style="margin-top: 12px; padding: 10px; background: var(--yellow-bg); border-radius: 4px; font-size: 11px; color: var(--gray-700);">
+            💡 <strong>หมายเหตุ:</strong> ค่า Cement Daily จะน้อยกว่าค่า Cement Lot เนื่องจากเป็นการสุ่มตัวอย่างและทดสอบประจำวัน
+          </div>
+        </div>
+
         <!-- Lot History -->
         <div class="modal-section">
-          <div class="modal-section-title">📋 Lot Change History</div>
+          <div class="modal-section-title">📋 CEMENT LOT HISTORY</div>
           <div class="lot-timeline">
             <div class="lot-row-t">
               <div class="lot-num">LOT-47</div>
@@ -1272,6 +1903,33 @@
           </div>
         </div>
 
+        <!-- Cement Daily History -->
+        <div class="modal-section">
+          <div class="modal-section-title">📅 Cement Daily History</div>
+          <div class="lot-timeline">
+            <div class="lot-row-t">
+              <div class="lot-num">Daily 20/02</div>
+              <div class="lot-date">20 ก.พ. 68 (วันนี้)</div>
+              <div class="lot-q ok">Pass</div>
+            </div>
+            <div class="lot-row-t">
+              <div class="lot-num">Daily 19/02</div>
+              <div class="lot-date">19 ก.พ. 68</div>
+              <div class="lot-q ok">Pass</div>
+            </div>
+            <div class="lot-row-t">
+              <div class="lot-num">Daily 18/02</div>
+              <div class="lot-date">18 ก.พ. 68</div>
+              <div class="lot-q ok">Pass</div>
+            </div>
+            <div class="lot-row-t">
+              <div class="lot-num">Daily 17/02</div>
+              <div class="lot-date">17 ก.พ. 68</div>
+              <div class="lot-q ok">Pass</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Dispatch Table -->
         <div class="modal-section full">
           <div class="modal-section-title">🚚 Dispatch Records (DN)</div>
@@ -1283,6 +1941,8 @@
                   <th>SHIPTO (CPAC)</th>
                   <th>PRDQTY (ตัน)</th>
                   <th>Bay Out Date</th>
+                  <th>Cement Lot Quality</th>
+                  <th>Cement Daily Quality</th>
                   <th>Silo Level @ Dispatch</th>
                 </tr>
               </thead>
@@ -1290,21 +1950,29 @@
                 <tr>
                   <td>DN-250220-001</td><td>CPAC บางนา-ตราด</td>
                   <td>28.5</td><td>20/02/68 08:14</td>
+                  <td><span style="background: #E8F5E9; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">LOT-47</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
+                  <td><span style="background: #FFF8E1; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">Daily 20/02</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
                   <td>67.4% / 5,392T</td>
                 </tr>
                 <tr>
                   <td>DN-250219-047</td><td>CPAC รัชดา</td>
                   <td>30.0</td><td>19/02/68 15:22</td>
+                  <td><span style="background: #E8F5E9; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">LOT-47</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
+                  <td><span style="background: #FFF8E1; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">Daily 19/02</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
                   <td>72.1% / 5,768T</td>
                 </tr>
                 <tr>
                   <td>DN-250219-031</td><td>CPAC ลาดกระบัง</td>
                   <td>25.5</td><td>19/02/68 09:45</td>
+                  <td><span style="background: #E8F5E9; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">LOT-47</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
+                  <td><span style="background: #FFF8E1; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">Daily 19/02</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
                   <td>78.3% / 6,264T</td>
                 </tr>
                 <tr>
                   <td>DN-250218-028</td><td>CPAC บางบัวทอง</td>
                   <td>29.0</td><td>18/02/68 14:00</td>
+                  <td><span style="background: #E8F5E9; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">LOT-47</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
+                  <td><span style="background: #FFF8E1; padding: 4px 10px; border-radius: 3px; font-size: 12px; font-weight: 600; color: #2E7D32;">Daily 18/02</span> <span style="background: #C8E6C9; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; color: #2E7D32; margin-left: 6px;">Pass</span></td>
                   <td>82.5% / 6,600T</td>
                 </tr>
               </tbody>
@@ -1313,6 +1981,170 @@
         </div>
 
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ CPAC SILO DETAIL MODAL ══════════════════════ -->
+<div class="modal-overlay" id="cpac-modal" onclick="closeCpacModalOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="cpac-modal-title">🛢️ SILO C1</div>
+        <div class="modal-subtitle" id="cpac-modal-subtitle">Plant Location</div>
+      </div>
+      <button class="modal-close" onclick="closeCpacModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="cpac-detail-tabs">
+        <button class="cpac-detail-tab active" id="cpac-tab-position" onclick="switchCpacDetailTab('position')">ตำแหน่ง DN ปัจจุบัน</button>
+        <button class="cpac-detail-tab" id="cpac-tab-usage" onclick="switchCpacDetailTab('usage')">กราฟการใช้งาน 24 ชั่วโมง</button>
+      </div>
+
+      <div class="cpac-detail-view active" id="cpac-view-position">
+      <!-- DN Location Map -->
+      <div class="modal-section full">
+        <div class="modal-section-title">📍 DN Location at Concrete Plant</div>
+        <div style="padding: 14px; background: var(--gray-50); border-radius: 6px; border: 1px solid var(--border);">
+          <div class="cpac-location-wrap">
+            <div class="cpac-location-card">
+              <div class="cpac-location-head">
+                <div>
+                  <div class="cpac-location-title" id="cpac-plant-name">Plant Name</div>
+                  <div class="cpac-location-meta" id="cpac-plant-details">Location Details</div>
+                </div>
+                <div class="cpac-summary-chip-row" id="cpac-summary-row"></div>
+              </div>
+
+              <div class="cpac-visual-card">
+                <div class="cpac-visual-top">
+                  <div>
+                    <div class="cpac-visual-stat-label">Current Level</div>
+                    <div class="cpac-visual-stat-value ok" id="cpac-visual-pct">69%</div>
+                  </div>
+                  <div class="cpac-visual-sub" id="cpac-visual-volume">124 ตัน<br>(124.0 ลบ.ม.)</div>
+                </div>
+
+                <div class="cpac-silo-map">
+                  <div class="cpac-scale-col">
+                    <div class="cpac-scale-top" id="cpac-scale-cap">180 ตัน</div>
+                    <div class="cpac-scale-current" id="cpac-scale-current">69%<br>124 ตัน</div>
+                    <div class="cpac-scale-tag" id="cpac-max-tag" style="bottom: 71%;">สูงสุด</div>
+                    <div class="cpac-scale-tag" id="cpac-min-tag" style="bottom: 11%;">ต่ำสุด</div>
+                  </div>
+
+                  <div class="cpac-shell-col">
+                    <div class="cpac-silo-shell">
+                      <div class="cpac-silo-cap">
+                        <div class="cpac-slot-grid" id="cpac-slot-grid"></div>
+                        <div class="cpac-max-line" id="cpac-max-line" style="bottom: 71%;"></div>
+                        <div class="cpac-min-line" id="cpac-min-line" style="bottom: 11%;"></div>
+                        <div class="cpac-current-line" id="cpac-current-line" style="bottom: 69%;"></div>
+                        <div class="cpac-fill-bg ok" id="cpac-fill-bg" style="height: 69%;"></div>
+                        <div id="cpac-dn-map"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="cpac-visual-foot">
+                  <div id="cpac-visual-foot-left">Lot LOT-47</div>
+                  <div id="cpac-visual-foot-right">Source STL</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cpac-dn-list-card">
+              <div class="cpac-list-title">DN Usage & Quality Result</div>
+              <div class="cpac-dn-list" id="cpac-dn-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+
+      <div class="cpac-detail-view" id="cpac-view-usage">
+        <div class="modal-section full">
+          <div class="modal-section-title">📈 Cement Usage Timeline</div>
+          <div class="cpac-usage-wrap">
+            <div class="cpac-usage-panel">
+              <div class="cpac-usage-header">
+                <div>
+                  <div class="cpac-usage-title">พยากรณ์การใช้งานไซโล</div>
+                  <div class="cpac-usage-subtitle" id="cpac-usage-subtitle">วิเคราะห์ย้อนหลัง 12 ชั่วโมง ถึงแผนการใช้งานล่วงหน้า 12 ชั่วโมง โดยให้สถานะปัจจุบันอยู่กึ่งกลางกราฟ</div>
+                </div>
+                <div class="cpac-usage-chip-row">
+                  <div class="cpac-usage-chip" id="cpac-usage-chip-material">ปูนซีเมนต์</div>
+                  <div class="cpac-usage-chip" id="cpac-usage-chip-lot">LOT-47</div>
+                </div>
+              </div>
+              <div class="cpac-usage-chart" id="cpac-usage-chart"></div>
+              <div class="cpac-usage-summary">
+                <div class="cpac-usage-card">
+                  <div class="cpac-usage-card-label">Current</div>
+                  <div class="cpac-usage-card-value" id="cpac-usage-current">124T</div>
+                  <div class="cpac-usage-card-note">สถานะปัจจุบันที่แกนกลาง</div>
+                </div>
+                <div class="cpac-usage-card">
+                  <div class="cpac-usage-card-label">12h Ago</div>
+                  <div class="cpac-usage-card-value" id="cpac-usage-past">138T</div>
+                  <div class="cpac-usage-card-note">ข้อมูลย้อนหลัง 12 ชั่วโมง</div>
+                </div>
+                <div class="cpac-usage-card">
+                  <div class="cpac-usage-card-label">+12h Plan</div>
+                  <div class="cpac-usage-card-value" id="cpac-usage-future">86T</div>
+                  <div class="cpac-usage-card-note">ปริมาณตามแผนล่วงหน้า</div>
+                </div>
+                <div class="cpac-usage-card">
+                  <div class="cpac-usage-card-label">Net Change</div>
+                  <div class="cpac-usage-card-value" id="cpac-usage-net">-38T</div>
+                  <div class="cpac-usage-card-note">สุทธิภายในกรอบเวลา 24 ชั่วโมง</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Silo Information -->
+      <div class="modal-section">
+        <div class="modal-section-title">🛢️ Silo Information</div>
+        <div class="qp-grid">
+          <div class="qp-item">
+            <div class="qp-label">Silo ID</div>
+            <div class="qp-val ok" id="cpac-silo-id">SILO C1</div>
+            <div class="qp-target">Name</div>
+          </div>
+          <div class="qp-item">
+            <div class="qp-label">Capacity</div>
+            <div class="qp-val ok" id="cpac-silo-cap">180</div>
+            <div class="qp-target">Tons</div>
+          </div>
+          <div class="qp-item">
+            <div class="qp-label">Current Volume</div>
+            <div class="qp-val ok" id="cpac-silo-vol">124</div>
+            <div class="qp-target">Tons</div>
+          </div>
+          <div class="qp-item">
+            <div class="qp-label">Current Level</div>
+            <div class="qp-val ok" id="cpac-silo-pct">69%</div>
+            <div class="qp-target">%</div>
+          </div>
+          <div class="qp-item">
+            <div class="qp-label">Lot Reference</div>
+            <div class="qp-val ok" id="cpac-silo-lot">LOT-47</div>
+            <div class="qp-target">Cement Lot</div>
+          </div>
+          <div class="qp-item">
+            <div class="qp-label">Source Plant</div>
+            <div class="qp-val ok" id="cpac-silo-source">STL</div>
+            <div class="qp-target">Cement Plant</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1332,10 +2164,88 @@ const cementData = [
 
 // CPAC Plant Silos — Cement only, sizes 180T and 100T
 const cpacCementData = [
-  { name:'SILO C1', brand:'SHC — ท่าหลวง LOT-47', cap:180, vol:124, min:20, max:170, lot:'LOT-47', quality:'ok', type:'cement', source:'STL' },
-  { name:'SILO C2', brand:'SHC — แก่งคอย LOT-23', cap:180, vol:48, min:20, max:170, lot:'LOT-23', quality:'warn', type:'cement', source:'SKK' },
-  { name:'SILO C3', brand:'Mortar Grade — ท่าหลวง', cap:100, vol:82, min:12, max:95, lot:'LOT-47', quality:'ok', type:'cement', source:'STL' },
-  { name:'SILO C4', brand:'SHC Blend Mix', cap:100, vol:14, min:12, max:95, lot:'MIX', quality:'fail', type:'cement', source:'STL+SKK' },
+  {
+    name:'SILO C1',
+    brand:'SHC — ท่าหลวง LOT-47',
+    cap:180,
+    vol:124,
+    min:20,
+    max:170,
+    lot:'LOT-47',
+    quality:'ok',
+    type:'cement',
+    source:'STL',
+    plant:'CPAC บางนา-ตราด',
+    plantDetails:['Bangkok Ready-Mix Hub', 'Line 1 • Hybrid Cement', 'อัปเดตตำแหน่ง DN ล่าสุด 10/03/2026 14:20'],
+    dns:[
+      { id:'DN123458', tons:38, sourceLot:'LOT-47', status:'ok', receivedAt:'10/03/2026 12:10', note:'ช่วงบนของไซโล', qc:'ผ่าน', strength:'28D 42.3 MPa', setting:'Set 166 min' },
+      { id:'DN123457', tons:86, sourceLot:'LOT-47', status:'ok', receivedAt:'10/03/2026 08:30', note:'ช่วงล่างของไซโล', qc:'ผ่าน', strength:'28D 42.0 MPa', setting:'Set 169 min' }
+    ],
+    dispatchQueue:[{dnCount:2,tons:60,etaDay:'11/03/2026',etaSlot:'06:00-09:00'},{dnCount:1,tons:30,etaDay:'11/03/2026',etaSlot:'09:00-12:00'}],
+    usageTimeline:[{hour:-12,tons:146},{hour:-10,tons:142},{hour:-8,tons:136},{hour:-6,tons:132},{hour:-4,tons:128},{hour:-2,tons:126},{hour:0,tons:124},{hour:2,tons:116},{hour:4,tons:108},{hour:4,tons:158},{hour:6,tons:150},{hour:8,tons:142},{hour:10,tons:134},{hour:12,tons:126}]
+  },
+  {
+    name:'SILO C2',
+    brand:'SHC — แก่งคอย LOT-23',
+    cap:180,
+    vol:48,
+    min:20,
+    max:170,
+    lot:'LOT-23',
+    quality:'warn',
+    type:'cement',
+    source:'SKK',
+    plant:'CPAC ฉะเชิงเทรา',
+    plantDetails:['Eastern Cluster', 'Line 2 • Strength Watch', 'อัปเดตตำแหน่ง DN ล่าสุด 10/03/2026 13:40'],
+    dns:[
+      { id:'DN123456', tons:14, sourceLot:'LOT-23', status:'warn', receivedAt:'10/03/2026 11:45', note:'ชั้นบนใกล้ current level', qc:'เฝ้าระวัง', strength:'28D 38.4 MPa', setting:'Set 182 min' },
+      { id:'DN123455', tons:16, sourceLot:'LOT-23', status:'ok', receivedAt:'10/03/2026 09:10', note:'ชั้นกลางของไซโล', qc:'ผ่าน', strength:'28D 39.1 MPa', setting:'Set 176 min' },
+      { id:'DN123454', tons:18, sourceLot:'LOT-23', status:'ok', receivedAt:'10/03/2026 06:20', note:'ชั้นล่างเหนือขั้นต่ำ', qc:'ผ่าน', strength:'28D 39.5 MPa', setting:'Set 171 min' }
+    ],
+    dispatchQueue:[{dnCount:1,tons:30,etaDay:'10/03/2026',etaSlot:'15:00-18:00'},{dnCount:1,tons:30,etaDay:'10/03/2026',etaSlot:'18:00-21:00'},{dnCount:1,tons:30,etaDay:'11/03/2026',etaSlot:'06:00-09:00'}],
+    usageTimeline:[{hour:-12,tons:84},{hour:-10,tons:81},{hour:-8,tons:75},{hour:-6,tons:60},{hour:-4,tons:67},{hour:-2,tons:55},{hour:0,tons:48},{hour:2,tons:42},{hour:4,tons:36},{hour:6,tons:30},{hour:6,tons:85},{hour:8,tons:75},{hour:10,tons:57},{hour:12,tons:50}]
+  },
+  {
+    name:'SILO C3',
+    brand:'Mortar Grade — ท่าหลวง',
+    cap:100,
+    vol:82,
+    min:12,
+    max:95,
+    lot:'LOT-47',
+    quality:'ok',
+    type:'cement',
+    source:'STL',
+    plant:'CPAC พระราม 2',
+    plantDetails:['Bangkok South Cluster', 'Line 3 • Mortar Grade', 'อัปเดตตำแหน่ง DN ล่าสุด 10/03/2026 14:05'],
+    dns:[
+      { id:'DN123453', tons:82, sourceLot:'LOT-47', status:'ok', receivedAt:'10/03/2026 07:55', note:'เต็มช่วงการใช้งานปัจจุบัน', qc:'ผ่าน', strength:'28D 41.8 MPa', setting:'Set 170 min' }
+    ],
+    dispatchQueue:[{dnCount:1,tons:28,etaDay:'10/03/2026',etaSlot:'12:00-15:00'},{dnCount:1,tons:30,etaDay:'10/03/2026',etaSlot:'21:00-24:00'}],
+    usageTimeline:[{hour:-12,tons:92},{hour:-10,tons:90},{hour:-8,tons:88},{hour:-6,tons:86},{hour:-4,tons:84},{hour:-2,tons:83},{hour:0,tons:82},{hour:2,tons:80},{hour:4,tons:76},{hour:6,tons:72},{hour:8,tons:68},{hour:10,tons:64},{hour:12,tons:60}]
+  },
+  {
+    name:'SILO C4',
+    brand:'SHC Blend Mix',
+    cap:100,
+    vol:14,
+    min:12,
+    max:95,
+    lot:'MIX',
+    quality:'fail',
+    type:'cement',
+    source:'STL+SKK',
+    plant:'CPAC สระบุรี',
+    plantDetails:['Central Blend Station', 'Line 1 • Blend 60/40', 'อัปเดตตำแหน่ง DN ล่าสุด 10/03/2026 12:55'],
+    dns:[
+      { id:'DN123452', tons:2, sourceLot:'MIX', status:'fail', receivedAt:'10/03/2026 12:25', note:'ชั้นบนสุดใกล้หมดไซโล', qc:'กักใช้งาน', strength:'28D 36.8 MPa', setting:'Set 194 min' },
+      { id:'DN123451', tons:3, sourceLot:'MIX', status:'warn', receivedAt:'10/03/2026 10:40', note:'ชั้นบน', qc:'เฝ้าระวัง', strength:'28D 37.5 MPa', setting:'Set 188 min' },
+      { id:'DN123450', tons:4, sourceLot:'MIX', status:'warn', receivedAt:'10/03/2026 08:10', note:'ชั้นกลางล่าง', qc:'เฝ้าระวัง', strength:'28D 38.0 MPa', setting:'Set 185 min' },
+      { id:'DN123449', tons:5, sourceLot:'MIX', status:'ok', receivedAt:'10/03/2026 05:45', note:'ชั้นล่างเหนือ minimum line', qc:'ผ่าน', strength:'28D 39.2 MPa', setting:'Set 177 min' }
+    ],
+    dispatchQueue:[{dnCount:1,tons:28,etaDay:'10/03/2026',etaSlot:'24:00-03:00'},{dnCount:1,tons:30,etaDay:'11/03/2026',etaSlot:'03:00-06:00'}],
+    usageTimeline:[{hour:-12,tons:38},{hour:-10,tons:34},{hour:-8,tons:30},{hour:-6,tons:27},{hour:-4,tons:22},{hour:-2,tons:18},{hour:0,tons:14},{hour:2,tons:11},{hour:4,tons:8},{hour:6,tons:6},{hour:6,tons:42},{hour:8,tons:34},{hour:10,tons:26},{hour:12,tons:18}]
+  },
 ];
 
 // ─── SILO CARD BUILDER ───────────────────────────────────────────────────────
@@ -1349,7 +2259,35 @@ function getBorderClass(pct, nodata) {
   const c = getColor(pct, nodata);
   return `border-${c}`;
 }
+function renderCpacDispatchQueue(silo) {
+  const queue = silo.dispatchQueue || [];
+  const totalDn = queue.reduce((sum, row) => sum + Number(row.dnCount || 0), 0);
+  const totalTons = queue.reduce((sum, row) => sum + Number(row.tons || 0), 0);
+  const rows = queue.length
+    ? queue.map((row) => `
+        <div class="cpac-delivery-row">
+          <div class="cpac-delivery-dn">DN ${row.dnCount}</div>
+          <div class="cpac-delivery-tons">${row.tons}T</div>
+          <div class="cpac-delivery-eta">
+            <span class="cpac-delivery-date">${row.etaDay}</span>
+            <span class="cpac-delivery-slot">${row.etaSlot}</span>
+          </div>
+        </div>`).join('')
+    : '<div class="cpac-delivery-empty">ไม่พบ DN รอจัดส่ง</div>';
+
+  return `
+    <div class="cpac-delivery-box">
+      <div class="cpac-delivery-head">
+        <div class="cpac-delivery-title">DN รอจัดส่ง</div>
+        <div class="cpac-delivery-total">${totalDn} DN | ${totalTons}T</div>
+      </div>
+      <div class="cpac-delivery-list">${rows}</div>
+    </div>`;
+}
 function makeSiloCard(silo, isCpac) {
+  const openAction = isCpac
+    ? `openCpacModalByName(${JSON.stringify(silo.name).replace(/"/g, '&quot;')})`
+    : 'openModal()';
   const pct = silo.nodata ? 0 : Math.round(silo.vol / silo.cap * 100);
   const color = getColor(pct, silo.nodata);
   const avail = silo.cap - silo.vol;
@@ -1358,6 +2296,13 @@ function makeSiloCard(silo, isCpac) {
   const minPct = Math.round(silo.min / silo.cap * 100);
   const maxTop = Math.round((1 - maxPct/100) * 116);
   const minTop = Math.round((1 - minPct/100) * 116);
+  const slotConfig = isCpac ? getCpacSiloSlotConfig(silo) : null;
+  const tankSlotLines = isCpac && slotConfig
+    ? `<div class="tank-slot-grid">${Array.from({ length: Math.max(slotConfig.slotCount - 1, 0) }, (_, index) => {
+        const top = Math.round((1 - (((index + 1) * slotConfig.slotTons) / silo.cap)) * 116);
+        return `<div class="tank-slot-line" style="top:${top}px"></div>`;
+      }).join('')}</div>`
+    : '';
 
   let qualityBadge = '';
   if (silo.quality === 'ok') qualityBadge = '<div class="quality-badge q-ok" data-tip="Quality: Pass&#10;28d: 42.1 MPa ✓&#10;Setting: 185 min ✓">Q</div>';
@@ -1377,7 +2322,7 @@ function makeSiloCard(silo, isCpac) {
   }
 
   return `
-  <div class="silo-card ${getBorderClass(pct, silo.nodata)}" onclick="openModal()">
+  <div class="silo-card ${getBorderClass(pct, silo.nodata)}" onclick="${openAction}">
     <div class="card-top">
       <div class="card-capacity">
         <span>Cap: ${silo.cap.toLocaleString()} T</span>
@@ -1389,6 +2334,7 @@ function makeSiloCard(silo, isCpac) {
 
     <div class="tank-wrap">
       <div class="tank-outer" style="height:116px">
+        ${tankSlotLines}
         <!-- Max line -->
         <div class="tank-line max" style="top:${maxTop}px">
           <span class="tank-line-label">สูงสุด</span>
@@ -1416,7 +2362,7 @@ function makeSiloCard(silo, isCpac) {
         <span>Max: <span>${silo.max.toLocaleString()}T</span></span>
       </div>
       <div class="card-actions">
-        <button class="btn-detail" onclick="event.stopPropagation(); openModal()">🔴 รายละเอียด</button>
+        <button class="btn-detail" onclick="event.stopPropagation(); ${openAction}">🔴 รายละเอียด</button>
         ${isCpac ? `
         <div class="btn-row">
           <button class="btn-order" onclick="event.stopPropagation()">✅ สั่ง</button>
@@ -1435,8 +2381,301 @@ function makeSiloCard(silo, isCpac) {
 function renderAll() {
   document.getElementById('cement-silos').innerHTML = cementData.map(s => makeSiloCard(s, false)).join('');
   document.getElementById('cpac-silos').innerHTML = cpacCementData.map(s => makeSiloCard(s, true)).join('');
+  syncCpacCardDispatchInfo();
 }
 renderAll();
+
+function syncCpacCardDispatchInfo() {
+  const cpacCards = document.querySelectorAll('#cpac-silos .silo-card');
+  cpacCards.forEach((cardEl, index) => {
+    const silo = cpacCementData[index];
+    if (!silo) return;
+    const btnRow = cardEl.querySelector('.btn-row');
+    if (!btnRow) return;
+    btnRow.outerHTML = renderCpacDispatchQueue(silo);
+  });
+}
+
+const cpacSiloByName = Object.fromEntries(cpacCementData.map((silo) => [silo.name, silo]));
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getQualityClass(quality) {
+  if (quality === 'fail') return 'fail';
+  if (quality === 'warn') return 'warn';
+  return 'ok';
+}
+
+function getDnStatusMeta(status) {
+  if (status === 'fail') return { cls: 'fail', label: 'กักใช้งาน' };
+  if (status === 'warn') return { cls: 'warn', label: 'เฝ้าระวัง' };
+  return { cls: 'ok', label: 'ผ่าน' };
+}
+
+function buildCpacDnPositions(silo) {
+  const items = (silo.dns || []).map((entry) => typeof entry === 'string' ? { id: entry, tons: 0, status: silo.quality || 'ok' } : entry);
+  let runningBottom = 0;
+  for (let i = items.length - 1; i >= 0; i -= 1) {
+    const tons = Number(items[i].tons || 0);
+    items[i] = {
+      ...items[i],
+      tons,
+      bottomT: runningBottom,
+      topT: runningBottom + tons
+    };
+    runningBottom += tons;
+  }
+  return items;
+}
+
+function buildCpacDnVisualLayout(silo, dnPositions, pct) {
+  if (!dnPositions.length || pct <= 0) return [];
+  return dnPositions.map((dn) => {
+    const visualBottomPct = silo.cap ? (dn.bottomT / silo.cap) * 100 : 0;
+    const visualHeightPct = silo.cap ? (Math.max(Number(dn.tons || 0), 0) / silo.cap) * 100 : 0;
+    return {
+      ...dn,
+      visualBottomPct,
+      visualHeightPct
+    };
+  });
+}
+
+function getCpacSiloSlotConfig(silo) {
+  if (silo.cap === 180) return { slotTons: 30, slotCount: 6 };
+  if (silo.cap === 100) return { slotTons: 30, slotCount: 3 };
+  const slotTons = 30;
+  const slotCount = Math.max(1, Math.floor(silo.cap / slotTons));
+  return { slotTons, slotCount };
+}
+
+let currentCpacSilo = null;
+let cpacDetailTab = 'position';
+
+function switchCpacDetailTab(tab) {
+  cpacDetailTab = tab;
+  ['position', 'usage'].forEach((name) => {
+    const tabEl = document.getElementById(`cpac-tab-${name}`);
+    const viewEl = document.getElementById(`cpac-view-${name}`);
+    if (tabEl) tabEl.classList.toggle('active', name === tab);
+    if (viewEl) viewEl.classList.toggle('active', name === tab);
+  });
+  if (tab === 'usage' && currentCpacSilo) renderCpacUsageChart(currentCpacSilo);
+}
+
+function formatSignedTons(value) {
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${Math.round(value)}T`;
+}
+
+function buildPath(points, xFor, yFor) {
+  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${xFor(point.hour).toFixed(1)} ${yFor(point.tons).toFixed(1)}`).join(' ');
+}
+
+function renderCpacUsageChart(silo) {
+  const chartEl = document.getElementById('cpac-usage-chart');
+  if (!chartEl) return;
+
+  const points = (silo.usageTimeline || []).slice();
+  if (!points.length) {
+    chartEl.innerHTML = '<div class="cpac-dn-empty">ไม่พบข้อมูลกราฟการใช้งาน</div>';
+    return;
+  }
+
+  const width = 980;
+  const height = 420;
+  const margin = { top: 24, right: 22, bottom: 56, left: 54 };
+  const plotWidth = width - margin.left - margin.right;
+  const plotHeight = height - margin.top - margin.bottom;
+  const maxY = silo.cap;
+  const xFor = (hour) => margin.left + ((hour + 12) / 24) * plotWidth;
+  const yFor = (tons) => margin.top + plotHeight - ((tons / maxY) * plotHeight);
+  const nowX = xFor(0);
+
+  const pastPoints = points.filter((point) => point.hour <= 0);
+  const futurePoints = points.filter((point) => point.hour >= 0);
+  const gridLevels = [0, 0.25, 0.5, 0.75, 1];
+  const refills = [];
+  for (let i = 1; i < points.length; i += 1) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    if (curr.hour === prev.hour && curr.tons > prev.tons) {
+      refills.push({ hour: curr.hour, from: prev.tons, to: curr.tons, add: curr.tons - prev.tons });
+    }
+  }
+
+  const currentPoint = points.find((point) => point.hour === 0) || points[pastPoints.length - 1];
+  const pastStart = points[0];
+  const futureEnd = points[points.length - 1];
+
+  const gridLines = gridLevels.map((level) => {
+    const tons = Math.round(level * maxY);
+    const y = yFor(tons);
+    return `
+      <line x1="${margin.left}" y1="${y}" x2="${width - margin.right}" y2="${y}" stroke="#D9E3F1" stroke-width="1"/>
+      <text x="${margin.left - 20}" y="${y + 4}" font-size="11" text-anchor="end" fill="#8CA0C4" font-weight="700">${tons}t</text>`;
+  }).join('');
+
+  const refillMarkup = refills.map((event) => {
+    const x = xFor(event.hour);
+    const yTop = yFor(event.to);
+    return `
+      <circle cx="${x}" cy="${yTop}" r="5.5" fill="#33B26B"/>
+      <text x="${x + 10}" y="${yTop - 6}" font-size="11" fill="#2B9B5F" font-weight="700">เติมวัสดุ +${Math.round(event.add)} ตัน</text>`;
+  }).join('');
+
+  chartEl.innerHTML = `
+    <svg class="cpac-usage-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="none">
+      ${gridLines}
+      <line x1="${nowX}" y1="${margin.top}" x2="${nowX}" y2="${height - margin.bottom}" stroke="#3567D8" stroke-width="2.5" stroke-dasharray="6 6"/>
+      <text x="${nowX + 10}" y="${margin.top + 20}" font-size="12" fill="#3567D8" font-weight="800">ปัจจุบัน (NOW)</text>
+      <path d="${buildPath(pastPoints, xFor, yFor)}" fill="none" stroke="#8E9DB8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="${buildPath(futurePoints, xFor, yFor)}" fill="none" stroke="#3567D8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 5"/>
+      <circle cx="${nowX}" cy="${yFor(currentPoint.tons)}" r="5.5" fill="#3567D8"/>
+      ${refillMarkup}
+      <text x="${margin.left}" y="${height - 16}" font-size="12" fill="#8CA0C4" font-weight="700">-12 ชม. (อดีต)</text>
+      <text x="${nowX}" y="${height - 16}" font-size="12" text-anchor="middle" fill="#9199AA" font-weight="700">ปัจจุบัน</text>
+      <text x="${width - margin.right}" y="${height - 16}" font-size="12" text-anchor="end" fill="#8CA0C4" font-weight="700">+12 ชม. (ตามแผน)</text>
+    </svg>`;
+
+  document.getElementById('cpac-usage-chip-material').textContent = silo.brand;
+  document.getElementById('cpac-usage-chip-lot').textContent = `Lot ${silo.lot}`;
+  document.getElementById('cpac-usage-subtitle').textContent = `วิเคราะห์ย้อนหลัง 12 ชั่วโมง ถึงแผนการใช้งานล่วงหน้า 12 ชั่วโมง ของ ${silo.name} โดยให้สถานะปัจจุบันอยู่กึ่งกลางกราฟ`;
+  document.getElementById('cpac-usage-current').textContent = `${Math.round(currentPoint.tons)}T`;
+  document.getElementById('cpac-usage-past').textContent = `${Math.round(pastStart.tons)}T`;
+  document.getElementById('cpac-usage-future').textContent = `${Math.round(futureEnd.tons)}T`;
+  document.getElementById('cpac-usage-net').textContent = formatSignedTons(futureEnd.tons - pastStart.tons);
+}
+
+function openCpacModalByName(name) {
+  const silo = cpacSiloByName[name];
+  if (silo) openCpacModal(silo);
+}
+
+function openCpacModal(silo) {
+  if (!silo) return;
+
+  closeModal();
+  currentCpacSilo = silo;
+
+  const qualityClass = getQualityClass(silo.quality);
+  const pct = silo.cap ? Math.round((silo.vol / silo.cap) * 100) : 0;
+  const dnPositions = buildCpacDnPositions(silo);
+  const density = 1.0;
+  const volumeM3 = (silo.vol / density).toFixed(1);
+  const maxPct = silo.cap ? (silo.max / silo.cap) * 100 : 0;
+  const minPct = silo.cap ? (silo.min / silo.cap) * 100 : 0;
+  const dnVisualLayout = buildCpacDnVisualLayout(silo, dnPositions, pct);
+  const slotConfig = getCpacSiloSlotConfig(silo);
+
+  document.getElementById('cpac-modal-title').textContent = `🛢️ ${silo.name}`;
+  document.getElementById('cpac-modal-subtitle').textContent = `${silo.plant} • Source ${silo.source} • Lot ${silo.lot}`;
+
+  document.getElementById('cpac-plant-name').textContent = silo.plant;
+  document.getElementById('cpac-plant-details').innerHTML = (silo.plantDetails || []).map((line) => `<div>${escapeHtml(line)}</div>`).join('');
+  document.getElementById('cpac-summary-row').innerHTML = [
+    `<span class="cpac-summary-chip">${escapeHtml(silo.name)}</span>`,
+    `<span class="cpac-summary-chip">${dnPositions.length} DN</span>`,
+    `<span class="cpac-summary-chip">คงเหลือ ${(silo.cap - silo.vol).toLocaleString()} T</span>`
+  ].join('');
+
+  document.getElementById('cpac-summary-row').innerHTML += '<span class="cpac-summary-chip">Scale ตามตันจริง</span>';
+
+  const pctEl = document.getElementById('cpac-visual-pct');
+  pctEl.textContent = `${pct}%`;
+  pctEl.className = `cpac-visual-stat-value ${qualityClass}`;
+  document.getElementById('cpac-scale-cap').innerHTML = `${silo.cap.toLocaleString()} à¸•à¸±à¸™<br><span style="font-size:10px;color:#8CA0C4">${slotConfig.slotCount} à¸Šà¹ˆà¸­à¸‡ x ${slotConfig.slotTons}T</span>`;
+  document.getElementById('cpac-visual-volume').innerHTML = `${silo.vol.toLocaleString()} ตัน<br>(${volumeM3} ลบ.ม.)`;
+  document.getElementById('cpac-scale-cap').textContent = `${silo.cap.toLocaleString()} ตัน`;
+  document.getElementById('cpac-scale-current').innerHTML = `${pct}%<br>${silo.vol.toLocaleString()} ตัน`;
+  document.getElementById('cpac-max-tag').style.bottom = `${maxPct}%`;
+  document.getElementById('cpac-min-tag').style.bottom = `${minPct}%`;
+  document.getElementById('cpac-max-line').style.bottom = `${maxPct}%`;
+  document.getElementById('cpac-min-line').style.bottom = `${minPct}%`;
+  document.getElementById('cpac-current-line').style.bottom = `${pct}%`;
+
+  const fillBg = document.getElementById('cpac-fill-bg');
+  fillBg.style.height = `${pct}%`;
+  fillBg.className = `cpac-fill-bg ${qualityClass}`;
+  document.getElementById('cpac-slot-grid').innerHTML = Array.from({ length: Math.max(slotConfig.slotCount - 1, 0) }, (_, index) => {
+    const bottomPct = ((index + 1) * slotConfig.slotTons / silo.cap) * 100;
+    return `<div class="cpac-slot-line" style="bottom:${bottomPct}%"></div>`;
+  }).join('');
+
+  document.getElementById('cpac-visual-foot-left').textContent = `Lot ${silo.lot} • ${silo.brand}`;
+  document.getElementById('cpac-visual-foot-right').textContent = `Source ${silo.source} • Min ${silo.min}T / Max ${silo.max}T`;
+
+  document.getElementById('cpac-dn-map').innerHTML = dnVisualLayout.map((dn) => {
+    const meta = getDnStatusMeta(dn.status);
+    const compactClass = dn.visualHeightPct <= 12 ? 'compact' : '';
+    const metaLine = dn.tons ? `${dn.tons.toLocaleString()}T • ${meta.label}` : meta.label;
+    return `
+      <div class="cpac-dn-zone ${meta.cls} ${compactClass}" style="bottom:${dn.visualBottomPct}%; height:${dn.visualHeightPct}%">
+        <div class="cpac-dn-zone-inner">
+          <div class="cpac-dn-zone-id">${escapeHtml(dn.id)}</div>
+          <div class="cpac-dn-zone-meta">${escapeHtml(metaLine)}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('cpac-dn-list').innerHTML = dnPositions.length
+    ? dnPositions.map((dn) => {
+        const meta = getDnStatusMeta(dn.status);
+        return `
+          <div class="cpac-dn-item ${meta.cls}">
+            <div>
+              <div class="cpac-dn-code">${escapeHtml(dn.id)}</div>
+              <div class="cpac-dn-desc">
+                ${escapeHtml(dn.note || 'ตำแหน่งในไซโล')}
+                <br>Lot ${escapeHtml(dn.sourceLot || silo.lot)} • ${meta.label}
+                ${dn.receivedAt ? `<br>รับเข้า ${escapeHtml(dn.receivedAt)}` : ''}
+              </div>
+              <div class="cpac-dn-chip-row">
+                <span class="cpac-dn-chip ${meta.cls}">${escapeHtml(dn.qc || meta.label)}</span>
+                ${dn.strength ? `<span class="cpac-dn-chip">${escapeHtml(dn.strength)}</span>` : ''}
+                ${dn.setting ? `<span class="cpac-dn-chip">${escapeHtml(dn.setting)}</span>` : ''}
+              </div>
+            </div>
+            <div class="cpac-dn-metrics">
+              ${dn.tons.toLocaleString()} T
+              <br>${dn.bottomT.toLocaleString()}-${dn.topT.toLocaleString()} T
+              <br>${Math.round((dn.topT / silo.cap) * 100)}%
+            </div>
+          </div>`;
+      }).join('')
+    : '<div class="cpac-dn-empty">ไม่พบข้อมูล DN ในไซโลนี้</div>';
+
+  document.getElementById('cpac-silo-id').textContent = silo.name;
+  document.getElementById('cpac-silo-cap').textContent = silo.cap.toLocaleString();
+  document.getElementById('cpac-silo-vol').textContent = silo.vol.toLocaleString();
+  document.getElementById('cpac-silo-lot').textContent = silo.lot;
+  document.getElementById('cpac-silo-source').textContent = silo.source;
+
+  ['cpac-silo-id', 'cpac-silo-cap', 'cpac-silo-vol', 'cpac-silo-pct', 'cpac-silo-lot', 'cpac-silo-source'].forEach((id) => {
+    document.getElementById(id).className = `qp-val ${qualityClass}`;
+  });
+  document.getElementById('cpac-silo-pct').textContent = `${pct}%`;
+
+  renderCpacUsageChart(silo);
+  switchCpacDetailTab('position');
+  document.getElementById('cpac-modal').classList.add('open');
+}
+
+function closeCpacModal() {
+  currentCpacSilo = null;
+  document.getElementById('cpac-modal').classList.remove('open');
+}
+
+function closeCpacModalOverlay(e) {
+  if (e.target === document.getElementById('cpac-modal')) closeCpacModal();
+}
 
 // Map stack detected: custom SVG only (no map library).
 // Basemap upgraded to Leaflet + OSM with Thailand viewport/bounds while preserving markers and click behavior.
@@ -1652,7 +2891,12 @@ function updatePlantHeader(sel) {
 }
 
 // ─── ESC to close ────────────────────────────────────────────────────────────
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeModal();
+    closeCpacModal();
+  }
+});
 
 // ══════════════════════════════════════════════════════════════════
 // QUALITY TRACEABILITY DATA
@@ -1925,5 +3169,3 @@ renderQTable();
 </script>
 </body>
 </html>
-
-
