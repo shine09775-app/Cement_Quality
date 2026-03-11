@@ -1773,16 +1773,28 @@
               <!-- Line -->
               <path d="M0,100 C50,95 100,80 150,75 C200,70 250,55 300,60 C350,65 400,50 450,45 C500,40 550,55 600,50 C650,45 700,40 750,50 C800,58 830,62 860,58"
                     stroke="#4CAF50" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-              <!-- DN markers -->
+              <!-- Cement quality collection markers -->
               <g>
-                <circle cx="200" cy="70" r="5" fill="#CC0000"/>
-                <text x="200" y="65" text-anchor="middle" font-size="9" fill="#CC0000">DN</text>
-                <circle cx="380" cy="55" r="5" fill="#CC0000"/>
-                <text x="380" y="50" text-anchor="middle" font-size="9" fill="#CC0000">DN</text>
-                <circle cx="580" cy="50" r="5" fill="#CC0000"/>
-                <text x="580" y="45" text-anchor="middle" font-size="9" fill="#CC0000">DN</text>
-                <circle cx="770" cy="52" r="5" fill="#CC0000"/>
-                <text x="770" y="47" text-anchor="middle" font-size="9" fill="#CC0000">DN</text>
+                <!-- Daily sampling -->
+                <circle cx="30" cy="100" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="155" cy="74" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="280" cy="58" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="405" cy="50" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="530" cy="50" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="655" cy="44" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="780" cy="52" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+
+                <!-- LOT sampling every ~7 days -->
+                <polygon points="30,92 38,100 30,108 22,100" fill="#EF6C00" stroke="#FFFFFF" stroke-width="1.5"/>
+                <text x="30" y="86" text-anchor="middle" font-size="9" font-weight="700" fill="#EF6C00">LOT</text>
+                <polygon points="780,44 788,52 780,60 772,52" fill="#EF6C00" stroke="#FFFFFF" stroke-width="1.5"/>
+                <text x="780" y="38" text-anchor="middle" font-size="9" font-weight="700" fill="#EF6C00">LOT</text>
+
+                <!-- Legend -->
+                <circle cx="500" cy="18" r="4" fill="#1565C0" stroke="#FFFFFF" stroke-width="1.5"/>
+                <text x="510" y="21" font-size="9" fill="#1565C0">Cement Quality Daily (ทุกวัน)</text>
+                <polygon points="500,26 508,34 500,42 492,34" fill="#EF6C00" stroke="#FFFFFF" stroke-width="1.5"/>
+                <text x="510" y="37" font-size="9" fill="#EF6C00">Cement Quality LOT (~7 วัน)</text>
               </g>
               <!-- Labels -->
               <text x="5" y="25" font-size="9" fill="#CC0000">Max 96%</text>
