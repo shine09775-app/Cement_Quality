@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CPAC Portal Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #cc0000;
+    --red-dark: #9d0000;
+    --red-soft: #ffe8e8;
+    --ink-900: #18202a;
+    --ink-700: #435062;
+    --ink-500: #708093;
+    --ink-300: #ccd4dd;
+    --ink-200: #e3e8ee;
+    --ink-100: #f4f6f9;
+    --white: #ffffff;
+    --blue: #1660c7;
+    --blue-soft: #e9f2ff;
+    --green: #2f7d32;
+    --green-soft: #edf8ef;
+    --shadow-sm: 0 6px 18px rgba(20, 32, 48, 0.08);
+    --shadow-md: 0 20px 48px rgba(20, 32, 48, 0.12);
+    --font-sans: "IBM Plex Sans Thai", sans-serif;
+    --font-mono: "IBM Plex Mono", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+    background:
+      radial-gradient(circle at top left, rgba(204, 0, 0, 0.10), transparent 28%),
+      linear-gradient(180deg, #f5f7fa 0%, #eef2f6 100%);
+    min-height: 100vh;
+  }
+
+  button, input {
+    font: inherit;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .login-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+  }
+
+  .login-card {
+    width: min(960px, 100%);
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.9fr);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(227, 232, 238, 0.9);
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--shadow-md);
+  }
+
+  .login-visual {
+    position: relative;
+    padding: 40px 36px;
+    background:
+      linear-gradient(135deg, rgba(204, 0, 0, 0.96), rgba(204, 0, 0, 0.68)),
+      linear-gradient(180deg, #8b0000, #cc0000);
+    color: var(--white);
+  }
+
+  .login-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.16), transparent 18%),
+      radial-gradient(circle at 78% 36%, rgba(255,255,255,0.10), transparent 16%),
+      linear-gradient(135deg, transparent 55%, rgba(255,255,255,0.08));
+    pointer-events: none;
+  }
+
+  .visual-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+
+  .visual-title {
+    margin-top: 18px;
+    font-size: clamp(28px, 3vw, 44px);
+    line-height: 1.04;
+    font-weight: 700;
+    max-width: 500px;
+  }
+
+  .visual-desc {
+    margin-top: 16px;
+    max-width: 520px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .visual-grid {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .visual-stat {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .visual-stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.8;
+  }
+
+  .visual-stat-value {
+    margin-top: 6px;
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 700;
+    font-family: var(--font-mono);
+  }
+
+  .login-form-wrap {
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-mark {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--red) 0%, #ff6d6d 100%);
+    color: var(--white);
+    font-weight: 700;
+    box-shadow: 0 10px 24px rgba(204, 0, 0, 0.18);
+  }
+
+  .logo-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .logo-subtitle {
+    font-size: 12px;
+    color: var(--ink-500);
+    margin-top: 3px;
+  }
+
+  .login-header h1 {
+    font-size: 32px;
+    line-height: 1.08;
+  }
+
+  .login-header p {
+    margin-top: 10px;
+    color: var(--ink-500);
+    line-height: 1.65;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-700);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .input {
+    width: 100%;
+    border: 1px solid var(--ink-200);
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: var(--white);
+    color: var(--ink-900);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .input:focus {
+    border-color: rgba(22, 96, 199, 0.45);
+    box-shadow: 0 0 0 3px rgba(22, 96, 199, 0.12);
+  }
+
+  .helper-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    color: var(--ink-500);
+    font-size: 12px;
+  }
+
+  .helper-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: 999px;
+    background: var(--ink-100);
+    color: var(--ink-700);
+    font-weight: 600;
+  }
+
+  .button {
+    border: 1px solid transparent;
+    border-radius: 14px;
+    padding: 14px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.18s ease;
+  }
+
+  .button.primary {
+    background: var(--red);
+    color: var(--white);
+  }
+
+  .button.primary:hover {
+    background: var(--red-dark);
+    transform: translateY(-1px);
+  }
+
+  .message {
+    min-height: 24px;
+    font-size: 13px;
+    color: var(--red);
+    font-weight: 600;
+  }
+
+  .app-shell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .app-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 22px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(227, 232, 238, 0.92);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .app-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .app-brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--red) 0%, #ff6d6d 100%);
+    color: var(--white);
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+  }
+
+  .app-brand-title {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .app-brand-subtitle {
+    font-size: 11px;
+    color: var(--ink-500);
+    margin-top: 3px;
+  }
+
+  .app-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .status-pill.blue { background: var(--blue-soft); color: var(--blue); }
+  .status-pill.green { background: var(--green-soft); color: var(--green); }
+
+  .ghost-button {
+    border: 1px solid var(--ink-200);
+    background: var(--white);
+    color: var(--ink-900);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .ghost-button:hover {
+    border-color: rgba(204, 0, 0, 0.18);
+    color: var(--red);
+  }
+
+  .floating-menu-button {
+    position: fixed;
+    top: 82px;
+    left: 18px;
+    z-index: 26;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(227, 232, 238, 0.95);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--ink-900);
+    box-shadow: var(--shadow-sm);
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: 0.18s ease;
+  }
+
+  .floating-menu-button:hover {
+    transform: translateY(-1px);
+    border-color: rgba(204, 0, 0, 0.18);
+    color: var(--red);
+  }
+
+  .floating-menu-button .hamburger {
+    font-size: 18px;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  .workspace {
+    display: grid;
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 18px;
+    padding: 18px;
+    flex: 1;
+  }
+
+  .workspace.sidebar-collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar,
+  .content-card {
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(227, 232, 238, 0.92);
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sidebar {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .workspace.sidebar-collapsed .sidebar {
+    display: none;
+  }
+
+  .sidebar-title {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .sidebar-desc {
+    color: var(--ink-500);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .tab-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tab-button {
+    width: 100%;
+    text-align: left;
+    border: 1px solid var(--ink-200);
+    background: var(--white);
+    border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+    transition: 0.18s ease;
+  }
+
+  .tab-button:hover,
+  .tab-button.active {
+    border-color: rgba(204, 0, 0, 0.14);
+    background: linear-gradient(180deg, #fff7f7, #fff);
+    box-shadow: 0 10px 20px rgba(204, 0, 0, 0.06);
+  }
+
+  .tab-title {
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .tab-meta {
+    margin-top: 5px;
+    font-size: 12px;
+    color: var(--ink-500);
+    line-height: 1.5;
+  }
+
+  .quick-card {
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--ink-100);
+  }
+
+  .quick-card h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .quick-card p {
+    font-size: 12px;
+    color: var(--ink-500);
+    line-height: 1.6;
+  }
+
+  .content-card {
+    overflow: hidden;
+    min-height: calc(100vh - 122px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .content-head {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--ink-200);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: linear-gradient(180deg, rgba(244, 246, 249, 0.78), rgba(255,255,255,0.96));
+  }
+
+  .content-head-main {
+    min-width: 0;
+  }
+
+  .content-title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .content-subtitle {
+    margin-top: 4px;
+    color: var(--ink-500);
+    font-size: 13px;
+  }
+
+  .content-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 999px;
+    background: var(--ink-100);
+    padding: 9px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-700);
+  }
+
+  .home-panel {
+    padding: 26px;
+    display: grid;
+    gap: 18px;
+  }
+
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .home-card {
+    border: 1px solid var(--ink-200);
+    border-radius: 18px;
+    padding: 18px;
+    background: var(--white);
+  }
+
+  .home-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .home-card p {
+    margin-top: 8px;
+    color: var(--ink-500);
+    line-height: 1.65;
+    font-size: 13px;
+  }
+
+  .home-card a {
+    display: inline-flex;
+    margin-top: 14px;
+    color: var(--red);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .frame-wrap {
+    flex: 1;
+    min-height: 0;
+    background: #eef2f6;
+  }
+
+  .frame {
+    width: 100%;
+    height: 100%;
+    min-height: calc(100vh - 194px);
+    border: 0;
+    background: var(--white);
+  }
+
+  @media (max-width: 1100px) {
+    .login-card,
+    .workspace {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .app-topbar {
+      padding: 14px 16px;
+      flex-wrap: wrap;
+    }
+
+    .page-hide-mobile {
+      display: none;
+    }
+
+    .home-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .visual-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .content-head {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+</head>
+<body>
+  <section class="login-shell" id="login-shell">
+    <div class="login-card">
+      <div class="login-visual">
+        <div class="visual-badge">CPAC Internal Portal</div>
+        <h1 class="visual-title">เข้าสู่ระบบเพื่อเลือกใช้งานหน้าจอ Dashboard และ Quality Setting</h1>
+        <p class="visual-desc">
+          หน้า index นี้ใช้เป็นจุดเริ่มต้นสำหรับเปิดหน้าจอ HTML ต่าง ๆ ในโฟลเดอร์เดียวกัน
+          หลัง login แล้วจะมี tab ให้เลือกทั้งหน้า Silo Dashboard และหน้า Cement Quality Setting
+        </p>
+        <div class="visual-grid">
+          <div class="visual-stat">
+            <div class="visual-stat-label">Portal Mode</div>
+            <div class="visual-stat-value">LOCAL</div>
+          </div>
+          <div class="visual-stat">
+            <div class="visual-stat-label">Linked Pages</div>
+            <div class="visual-stat-value">2</div>
+          </div>
+          <div class="visual-stat">
+            <div class="visual-stat-label">Session</div>
+            <div class="visual-stat-value">Browser</div>
+          </div>
+          <div class="visual-stat">
+            <div class="visual-stat-label">Role</div>
+            <div class="visual-stat-value">CPAC</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="login-form-wrap">
+        <div class="logo-row">
+          <div class="logo-mark">CP</div>
+          <div>
+            <div class="logo-title">CPAC Entry Gateway</div>
+            <div class="logo-subtitle">user / password สำหรับเข้าเมนูกลางของไฟล์ HTML</div>
+          </div>
+        </div>
+
+        <div class="login-header">
+          <h1>Sign In</h1>
+          <p>หน้า demo นี้เป็น local portal จึงตรวจเฉพาะว่ากรอกข้อมูลครบ ไม่เชื่อม backend authentication จริง</p>
+        </div>
+
+        <form id="login-form">
+          <div class="field">
+            <label for="username">User</label>
+            <input class="input" id="username" name="username" type="text" autocomplete="username" placeholder="เช่น cpac.engineer">
+          </div>
+
+          <div class="field" style="margin-top:14px;">
+            <label for="password">Password</label>
+            <input class="input" id="password" name="password" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
+          </div>
+
+          <div class="helper-row" style="margin-top:14px;">
+            <span class="helper-chip">Local demo login</span>
+            <span>ต้องกรอกทั้ง user และ password</span>
+          </div>
+
+          <div class="message" id="login-message" style="margin-top:12px;"></div>
+
+          <button class="button primary" type="submit" style="width:100%;margin-top:4px;">เข้าสู่ระบบ</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-shell hidden" id="app-shell">
+    <header class="app-topbar">
+      <div class="app-brand">
+        <div class="app-brand-mark">CP</div>
+        <div>
+          <div class="app-brand-title">CPAC HTML Portal</div>
+          <div class="app-brand-subtitle">เลือกหน้าใช้งานจากไฟล์ภายในโฟลเดอร์นี้</div>
+        </div>
+      </div>
+
+      <div class="app-right">
+        <span class="status-pill green" id="welcome-pill">Signed in</span>
+        <span class="status-pill blue page-hide-mobile">Folder HTML Navigation</span>
+        <button class="ghost-button" type="button" id="logout-button">Logout</button>
+      </div>
+    </header>
+
+    <button class="floating-menu-button hidden" type="button" id="floating-menu-button" aria-label="Show navigation menu" title="Show navigation menu">
+      <span class="hamburger">☰</span>
+    </button>
+
+    <main class="workspace">
+      <aside class="sidebar">
+        <div>
+          <div class="sidebar-title">Navigation Tabs</div>
+          <div class="sidebar-desc">เลือกหน้าแรกแบบ overview หรือเปิดไฟล์ HTML จริงในโฟลเดอร์ผ่านแท็บด้านล่าง</div>
+        </div>
+
+        <div class="tab-list" id="tab-list"></div>
+
+        <div class="quick-card">
+          <h3>หมายเหตุ</h3>
+          <p>
+            ชื่อไฟล์ที่ลิงก์จริงคือ `cpac-cement-quality-settings.html`
+            โดยผมใช้ชื่อไฟล์จริงในระบบแทนชื่อที่พิมพ์คลาดเคลื่อน `cpac-cement-quqlity-settings.html`
+          </p>
+        </div>
+      </aside>
+
+      <section class="content-card">
+        <div class="content-head">
+          <div class="content-head-main">
+            <div class="content-title" id="content-title">Home</div>
+            <div class="content-subtitle" id="content-subtitle">ภาพรวมและทางลัดสำหรับเปิดหน้าจอที่มีอยู่ในโฟลเดอร์</div>
+          </div>
+          <div class="content-actions">
+            <button class="ghost-button" type="button" id="toggle-sidebar-button">Hide Menu</button>
+            <div class="file-chip" id="file-chip">index.html</div>
+            <button class="ghost-button hidden" type="button" id="open-new-button">Open New Tab</button>
+          </div>
+        </div>
+
+        <div class="home-panel" id="home-panel">
+          <div class="home-grid">
+            <article class="home-card">
+              <h3>CPAC Silo Monitoring Platform</h3>
+              <p>หน้าจอ dashboard หลักสำหรับดูข้อมูล silo, plant view, national map และ quality traceability</p>
+              <a href="cpac-silo-dashboard.html" target="_blank" rel="noopener noreferrer">เปิดไฟล์โดยตรง</a>
+            </article>
+            <article class="home-card">
+              <h3>CPAC Cement Quality Abnormal Setting</h3>
+              <p>หน้าจอตั้งค่า abnormal threshold, lower/upper limit และคำแนะนำ high/low สำหรับวิศวกร CPAC</p>
+              <a href="cpac-cement-quality-settings.html" target="_blank" rel="noopener noreferrer">เปิดไฟล์โดยตรง</a>
+            </article>
+          </div>
+          <article class="home-card">
+            <h3>วิธีใช้งาน</h3>
+            <p>
+              เลือกแท็บจากเมนูซ้ายเพื่อแสดงหน้า HTML ภายใน `iframe` ด้านขวา
+              ถ้าต้องการเปิดหน้าแยกต่างหากให้กด `Open New Tab`
+            </p>
+          </article>
+        </div>
+
+        <div class="frame-wrap hidden" id="frame-wrap">
+          <iframe class="frame" id="content-frame" title="CPAC Content Frame"></iframe>
+        </div>
+      </section>
+    </main>
+  </section>
+
+<script>
+  const pages = [
+    {
+      id: "home",
+      title: "Home",
+      subtitle: "ภาพรวมและทางลัดสำหรับเปิดหน้าจอที่มีอยู่ในโฟลเดอร์",
+      file: "index.html",
+      description: "หน้าเริ่มต้นของ portal",
+      type: "home"
+    },
+    {
+      id: "silo-dashboard",
+      title: "Silo Dashboard",
+      subtitle: "เปิดหน้า cpac-silo-dashboard.html",
+      file: "cpac-silo-dashboard.html",
+      description: "Dashboard หลักสำหรับ silo monitoring และ quality traceability",
+      type: "frame"
+    },
+    {
+      id: "quality-settings",
+      title: "Quality Settings",
+      subtitle: "เปิดหน้า cpac-cement-quality-settings.html",
+      file: "cpac-cement-quality-settings.html",
+      description: "หน้าตั้งค่า lower/upper limit และ abnormal advice",
+      type: "frame"
+    }
+  ];
+
+  const loginShell = document.getElementById("login-shell");
+  const appShell = document.getElementById("app-shell");
+  const loginForm = document.getElementById("login-form");
+  const loginMessage = document.getElementById("login-message");
+  const welcomePill = document.getElementById("welcome-pill");
+  const workspace = document.querySelector(".workspace");
+  const tabList = document.getElementById("tab-list");
+  const contentTitle = document.getElementById("content-title");
+  const contentSubtitle = document.getElementById("content-subtitle");
+  const fileChip = document.getElementById("file-chip");
+  const homePanel = document.getElementById("home-panel");
+  const frameWrap = document.getElementById("frame-wrap");
+  const contentFrame = document.getElementById("content-frame");
+  const openNewButton = document.getElementById("open-new-button");
+  const logoutButton = document.getElementById("logout-button");
+  const toggleSidebarButton = document.getElementById("toggle-sidebar-button");
+  const floatingMenuButton = document.getElementById("floating-menu-button");
+
+  let activePageId = "home";
+  let sidebarCollapsed = sessionStorage.getItem("cpacPortalSidebarCollapsed") === "1";
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function getSavedSession() {
+    try {
+      return JSON.parse(sessionStorage.getItem("cpacPortalSession") || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveSession(session) {
+    sessionStorage.setItem("cpacPortalSession", JSON.stringify(session));
+  }
+
+  function clearSession() {
+    sessionStorage.removeItem("cpacPortalSession");
+  }
+
+  function applySidebarState() {
+    workspace.classList.toggle("sidebar-collapsed", sidebarCollapsed);
+    toggleSidebarButton.textContent = sidebarCollapsed ? "Show Menu" : "Hide Menu";
+    toggleSidebarButton.setAttribute("aria-expanded", String(!sidebarCollapsed));
+    toggleSidebarButton.classList.toggle("hidden", sidebarCollapsed);
+    floatingMenuButton.classList.toggle("hidden", !sidebarCollapsed);
+    sessionStorage.setItem("cpacPortalSidebarCollapsed", sidebarCollapsed ? "1" : "0");
+  }
+
+  function renderTabs() {
+    tabList.innerHTML = pages.map((page) => `
+      <button class="tab-button ${page.id === activePageId ? "active" : ""}" type="button" data-page-id="${page.id}">
+        <div class="tab-title">${escapeHtml(page.title)}</div>
+        <div class="tab-meta">${escapeHtml(page.description)}</div>
+      </button>
+    `).join("");
+  }
+
+  function showPage(pageId) {
+    const page = pages.find((item) => item.id === pageId) || pages[0];
+    activePageId = page.id;
+    renderTabs();
+
+    sidebarCollapsed = page.type === "frame";
+    applySidebarState();
+
+    contentTitle.textContent = page.title;
+    contentSubtitle.textContent = page.subtitle;
+    fileChip.textContent = page.file;
+
+    if (page.type === "home") {
+      homePanel.classList.remove("hidden");
+      frameWrap.classList.add("hidden");
+      openNewButton.classList.add("hidden");
+      contentFrame.removeAttribute("src");
+      return;
+    }
+
+    homePanel.classList.add("hidden");
+    frameWrap.classList.remove("hidden");
+    openNewButton.classList.remove("hidden");
+    contentFrame.src = page.file;
+    openNewButton.onclick = () => window.open(page.file, "_blank", "noopener,noreferrer");
+  }
+
+  function showApp(username) {
+    loginShell.classList.add("hidden");
+    appShell.classList.remove("hidden");
+    welcomePill.textContent = `Signed in: ${username}`;
+    showPage(activePageId);
+  }
+
+  function showLogin() {
+    appShell.classList.add("hidden");
+    loginShell.classList.remove("hidden");
+  }
+
+  loginForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    if (!username || !password) {
+      loginMessage.textContent = "กรุณากรอก user และ password ให้ครบ";
+      return;
+    }
+
+    loginMessage.textContent = "";
+    saveSession({ username });
+    showApp(username);
+  });
+
+  tabList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-page-id]");
+    if (!button) return;
+    showPage(button.dataset.pageId);
+  });
+
+  logoutButton.addEventListener("click", () => {
+    clearSession();
+    activePageId = "home";
+    document.getElementById("password").value = "";
+    showLogin();
+  });
+
+  toggleSidebarButton.addEventListener("click", () => {
+    sidebarCollapsed = !sidebarCollapsed;
+    applySidebarState();
+  });
+
+  floatingMenuButton.addEventListener("click", () => {
+    sidebarCollapsed = false;
+    applySidebarState();
+  });
+
+  renderTabs();
+  applySidebarState();
+  const session = getSavedSession();
+  if (session && session.username) {
+    showApp(session.username);
+  } else {
+    showLogin();
+  }
+</script>
+</body>
+</html>
